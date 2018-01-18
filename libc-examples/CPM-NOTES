@@ -1,0 +1,241 @@
+IDSK=/home/dan/src/dsktools/idsk/iDSK.0.13/iDSK/src/iDSK 
+dsktrans /media/sf_CPM1/DISK1.dsk /media/sf_CPM1/DISK1A.dsk
+$IDSK /media/sf_CPM1/DISK1A.dsk -l | grep OSZ
+$IDSK /media/sf_CPM1/DISK1A.dsk -i /media/sf_OSZ/osz.com -t 1 -e 0100 -s /media/sf_CPM1/DISK1A.dsk
+$IDSK /media/sf_CPM1/DISK1A.dsk -l | grep OSZ 
+
+GUAVA 	C30001	/* BIOS startup vector */
+Z80PACK	C303FA	/* BIOS startup vector */
+AMSTRAD C303FC	/* BIOS startup vector */
+
+$IDSK /media/sf_CPM1/DISK1A.dsk -i /media/sf_OSZ/osz.com 
+
+Startup Vector (vector 0x0)
+	Helium  (NO$CPM) - jumps started to loaded monitor at 0x0100 (TPA)
+	z80pack (CPM1.3) - jumps to 0xFa03 (BIOS startup?). Debug BIOS from there.
+	Amstrad (CPM3?)  - jumps to 0xfc03 (bios startup?). Debug BIOS from there.
+SIGNATURES:
+	z80pack 	CPM1.x/2.x:	C303FA
+	z80pack/Amstrad CPM3.x:		C303FC 
+	
+
+ARCHITECTURE SIGNATURES:
+	Helium: 	C300010000DB00c9
+	Z80PACK:
+		CPM1.3: C303FA0000C306EE
+		CPM1.4: C303FA0000C306ED
+		CPM2.2: C303FA0002C306EC
+		CPM3.0: C303FCFB00C306E8
+
+	Amstrad:
+		CPM3.0: C303FC0000C306F6
+
+
+CPM1: debugger needs 13, 52
+CPM2: debugger needs 72, 4A
+
+
+	
+
+
+Interrupt Service Routine (Vector 0x0038)
+	* Helium - included inline from our BIOS, which is wrong, and overflows some areas in the CP/M header.
+          Need to check the structure of low storage and handle this differently.
+	  The first thing we do is save the value of SP to address 0x0090+1? But the assembly doesn't look right. 
+	  We restore the value of SP from the same address at the end of the routine.
+	  The debugger will need to handle all pushes/pops as well as the exchange to the alternate register set. 
+	  The former is a good test case for starting to refactor the debugger (to make it smaller). 	
+	  Debugger needs ED7B
+
+	* z80pack - debugger needs CA for CPM1.3
+		  - debugger needs 13 for CPM1.4
+		  - debugger needs 4A for CPM2	
+
+			
+	
+	* Amstrad - JP 0xFDAE 
+ 	  would appear this is a jump directly into BIOS
+ 	  debugger needs FD3F
+
+BDOS system call (vector 0x0005)
+
+* Helium does a wacky IN 0x00,A. There's an intercept in the CPU module which should probably be hooked up to the BIOS instead.
+  Then we should call our BIOS or BDOS vector as recommended.
+* Amstrad CPC jumps to vector 0xF606 (BIOS?). Unclear whether this is in ROM, and how to detect? Seems to jump to a series of jumps (jump table?)
+  Need opcode 79 to continue. 
+	
+* CPM1.3: jumps to 0xed06 (BDOS?) then we need debugger opcode 0x52
+* CPM1.4: same thing
+* 
+
+
+
+TODO
+====
+* DEBUGGER OPCODES: F5,76
+
+* For z80pack CPM2/3, get 32MB hard drive working
+* for z80pack CPM3, get the 512MB hard drive working
+* get z80tests disk running on all versions of CPM
+* get the z80tests programs out and onto the Amstrad DSK format
+* Optimize the debugger for size and compiler speed (a bit)
+
+
+
+==== DONE
+* [DONE] Build combined z80tests/OSZ disk image
+* [DONE] Get z80pack running OSZ on all supported versions of CP/M, from the standalone disk
+
+* Check how the CP/M systems implement their BDOS system calls, whether it is via a jump into a ROM
+ (bank switch?) or a jump into BIOS in the flat address space
+* Test whether we can get OS/Z80 to load from the boot block of a z80pack DSK image 
+* Clean up the low storage area further, moving the ISR at 0x0038 somewhere else
+
+DEBUGGER
+====
+* Implement CA (z80pack)
+* Implement ED7B (Helium)
+* Implement FD3F 
+
+
+See CP/M alteration guide:
+
+http://www.gaby.de/cpm/manuals/archive/cpm22htm/ch6.htm
+
+
+BIOS Jump table: 
+According to the CP/M 2.2 alteration guide, 4A00H is the address of the jump table on the system they are describing.
+osz
+
+		
+JUMP TABLE ADDRESSES:
+====================
+z80pack CPM1.3:		0xFA03 (14 vectors)
+z80pack CPM1.4:		0xFA03 (14 vectors)
+z80pack CPM2.2:		0xFA03 (16 vectors)
+z80pack CPM3.0:		0xFC03 (same address as Amstrad CPM+, 32 vectors, last 3 are NULL)
+Amstrad CPM2.2:		0xAD03 (17 vectors, as per docs)
+Amstrad CPM+:		0xFC03 (32 vectors, last 2 are NULL)
+
+
+So it seems Amstrad CPM2.2 loads CBIOS at about the 40K mark, so the TPA is smaller on this platform.
+Z80Pack CPM2.2 loads it at the 62K mark. Amstrad CPM+ and Z80Pack CP/M3 seems to load it even higher again at 63K. 
+
+
+A good strategy for Helium would be to match CPM/2.2, using 16/17 vectors at either 0xFA03, or higher at 0xFC03 if less
+room is need for the BIOS. That means we can possible re-use some of the z80pack BIOS, and if we use their disk driver 
+as well that might make disk access much easier. 
+
+Maybe it would be possible to extract the BIOS from the z80pack CP/M 2.2 disk image using DD, or perhaps it is already
+included as a seperate file (check the distribution). It identifies as: 
+
+64K CP/M Vers. 2.2 (Z80 CBIOS V1.2 for Z80SIM, Copyright 1988-2007 by Udo Munk)
+
+So might be worth looking if the source is available, included, or a binary exists which could be disassembled or
+patched. 
+
+
+
+Z80pack JUMP TABLE:
+===================
+
+According to the alteration guide, the BIOS jump table looks like this: 
+
+
+0xFA03 | JP 0xFB51         | C351FB | BOOT      ;ARRIVE HERE FROM COLD START LOAD
+0xFA06 | JP 0xFBBC         | C3BCFB | WBOOT  	;ARRIVE HERE FOR WARM START
+0xFA09 | JP 0xFBBF         | C3BFFB | CONST	;CHECK FOR CONSOLE CHAR READY
+0xFA0C | JP 0xFBC2         | C3C2FB | CONIN     ;READ CONSOLE CHARACTER IN
+0xFA0F | JP 0xFBC6         | C3C6FB | CONOUT    ;WRITE CONSOLE CHARACTER OUT
+0xFA12 | JP 0xFBCD         | C3CDFB | LIST	;WRITE LISTING CHARACTER OUT
+0xFA15 | JP 0xFBD1         | C3D1FB | PUNCH     ;WRITE CHARACTER TO PUNCH DEVICE
+0xFA18 | JP 0xFBD4         | C3D4FB | READER    ;READ READER DEVICE
+0xFA1B | JP 0xFBD9         | C3D9FB | HOME      ;MOVE TO TRACK 00 ON SELECTED DISK
+0xFA1E | JP 0xFC05         | C305FC | SELDSK    ;SELECT DISK DRIVE
+0xFA21 | JP 0xFC09         | C309FC | SETTRK    ;SET TRACK NUMBER
+0xFA24 | JP 0xFC1E         | C31EFC | SETSEC    ;SET SECTOR NUMBER
+0xFA27 | JP 0xFC25         | C325FC | SETDMA    ;SET DMA ADDRESS
+0xFA2A | JP 0xFC29         | C329FC | READ      ;READ SELECTED SECTOR
+0xFA2D | JP 0xFBCA         | C3CAFB | WRITE     ;WRITE SELECTED SECTOR
+0xFA30 | JP 0xFC0D         | C30DFC | LISTST    ;RETURN LIST STATUS
+0xFA33 | ??? -> [73]       | 73       SECTRAN   ;SECTOR TRANSLATE SUBROUTINE (SEEMS TO EITHER BE MISSING FOR Z80PACK,
+						;OR THE WHOLE ROUTINE ACTUALLY RESIDES HERE. CHECK THE SOURCE I SUPPOSE!)
+ 				                ;THIS PROBABLY MAPS BDOS LOGICAL SECTORS TO PHYSICAL SECTORS
+						;FOR THE SUPPORTED DRIVE
+						
+
+https://hackaday.com/tag/udo-munk/
+has a lot of info. 
+
+MAKING HELIUM z80PACK COMPATIBLE!!
+==================================
+
+Debug of CONOUT on Z80PACK CP/M 2.2 (@ 0xFBC6):
+
+	0xFBC6 | LD (HL), D        | 79
+	0xFBC7 | OUT 0x03, A       | D303
+	0xFBC9 | RET               | C9
+
+Debug of CONIN on Z80PACK CP/M 2.2 (@ 0xFBC2):
+
+	0xFBC2 | LD (HL), D        | 79
+	0xFBC3 | OUT 0x01, A       | D301
+	0xFBC5 | RET               | C9
+
+So we should check what OUTING to 0x03/0x01 respectively do in the CPMSIM source 
+(also check earlier and later versions of Udo's CBIOS on Z80Pack do it the same way).  
+
+
+0xFA03 | JP 0xFB51         | C351FB | BOOT      ;ARRIVE HERE FROM COLD START LOAD
+...
+0xFB51 | LD SP,0x0080      | 318000
+0xFB54 | LD C,0x00         | 0E00
+0xFB56 | CALL 0xFBD9       | CDD9FB   ->  ; HOME      ;MOVE TO TRACK 00 ON SELECTED DISK      
+0xFB59 | CALL 0xFBD4       | CDD4FB   ->  ; READER    ;READ READER DEVICE
+0xFB5C | ??? -> [06]       | 06
+
+^^ we need opcode 0x06 to continue debugging the COLD START LOAD ROUTINE. 
+
+Again, investigate integrating the disassembler at:
+
+	 http://www.sarnau.info/posts/1992/z80_disassembler_assembler/
+
+Since it looks smaller and more complete that mine. Also I can then move on to more
+important things than writing a disassembler.
+
+Looks like early on, the BIOS sets the stack address very low (0x0080 - check this against the CP/M memory map, 
+I suspect it's in a reserved area, and our clock interrupt routine might overflow into this area). In fact, we
+would probably throw out OSZ when loading CP/M anyway. Keep the ISR0 code at 0x0038 as an example of how to handle
+interrupts. 
+
+
+Amstrad CP/M 2.2 BOOT routine (0xC2B5) immediately calls 0xAD33, which in turn immediately does a JUMP to 0xC0F1. 
+No idea what they are doing there but it might be very hardware specific, probably like the rest of the Amstrad CBIOS. 
+
+
+
+---------------------------------------------
+Debug of CONOUT on Amstrad CP/M 2.2 (@ 0xC2C9):
+	(our debuggger needs to support A1 to read this - see notes below). 
+Debug of CONIN on Amstrad CP/M 2.2 (@ 0xC2BD):
+	(our debuggger needs to support 86 to read this - see notes below). 
+
+NEW OPCODES FOR DEBUGGER
+
+06 LD   B,&00 		(needed for CPM2.2 BOOT routine - see above)
+A1 AND  C  		(needed for Amstrad CPM2.2 CONOUT routine - see above)
+86 ADD  A,(HL)		(needed for Amstrad CPM2.2 CONIN routine - see above)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

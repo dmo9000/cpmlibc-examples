@@ -1,0 +1,7 @@
+CFLAGS = -g -ggdb -D__LINUX__ 
+
+ztelnet: telnet.c zmodem.c osdep.c
+	gcc -Ilinux $(CFLAGS) -o ztelnet telnet.c zmodem.c osdep.c
+
+clean:
+	rm -f ztelnet 

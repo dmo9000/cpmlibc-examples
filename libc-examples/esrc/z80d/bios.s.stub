@@ -1,0 +1,16 @@
+;; Generic crt0.s for a Z80
+.area HEADER (ABS) 
+;; Reset vector
+.org 0
+    OUT  (00),A
+.org 0x05
+    IN   A,(00)
+.org 0x07
+    RET
+.org 0x38
+ ei
+ ret
+
+
+.org 0x100
+.area _DATA (ABS)

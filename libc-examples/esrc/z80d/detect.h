@@ -1,0 +1,1 @@
+int detect(char *payload);

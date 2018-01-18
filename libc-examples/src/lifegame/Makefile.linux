@@ -1,0 +1,7 @@
+CFLAGS = -g -ggdb -D__LINUX__ 
+
+lifegame: lifegame.c
+	gcc -Ilinux $(CFLAGS) -o lifegame lifegame.c
+
+clean:
+	rm -f lifegame 

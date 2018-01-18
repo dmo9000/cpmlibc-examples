@@ -1,0 +1,2432 @@
+	.z80
+	title	DISKSTAT Disk statistics
+
+	name	('DISKST')
+
+;------------------------------------------------------------------
+; Utility to display disc characteristics and file allocation
+;
+; Copyright 1983 D. Powys-Lybbe
+; Author: D. Powys-Lybbe, MML Systems Ltd., London
+; Date: 20th June 1983
+;
+;------------------------------------------------------------------
+; Revisions
+; =========
+;
+;------------------------------------------------------------------
+
+;------------------------------------------------------------------------
+	page
+
+
+	public	def.dsk,dpb,dph2,dph3,dpb.ptr,dph.ptr,vers,vers.rel,vers.os
+	public	savesp
+	public	BADSEL,selmsg,badvers,vermsg,BIOS,badbios,jmpmsg
+	public	BIOSPB,BIOS.FUNC,BIOS.AREG,BIOS.BCREG,BIOS.DEREG,BIOS.HLREG
+	public	waitcr,waitbuff,waitlen,fetchdp
+	public	clearscrn,csnmsg,screen1,s1msg,s1dsk
+	public	option,optquit,optmsg,optbuf,optlen,optchr
+	public	makehex,wrdhex,dblhex,bythex,nblhex,testhex,nexthex
+	public		hexchr,hextxt
+	public	makedec,dec2,errdec,gigdec,megdec,wrddec,bytdec,txtdec,zrobcd
+	public	tobcd,bcd,testdec,nextdec,decchr,dectxt
+	public	makemax,makem1,makem2,makem3,makem4,makem5,makem6,makem8
+	public	makem7,makem9,make01,make02,make03,make04,makem0
+	public	makedir,dirdb,dbsize,maked0,maked1,maked2,maked3,maked4
+	public	makedat,maked5,maked6
+	public	maketot,maked7,maked8
+	public	mmegx8,mmegx4,mmegx2,mgigx8,mgigx4,mgigx2,mgigx128
+	public	showblk,posn,sdbmsg,sdbdsk,sdbhex,sdbdec,sdbmax
+	public	sdbdir,sdbdat,sdbtot
+	public	showhdr
+	public	showalv,salmsg,saldsk
+	public	showfil,sflmsg,sfldsk
+	public	showdir,sdrmsg,sdrdsk
+	public	goodvers,useccp,main,task1,table1,return
+
+
+;------------------------------------------------------------------------
+	page
+
+;		===============
+;		DISC DATA AREAS
+;		===============
+
+;--------------------------------------------------------------
+;
+; CP/M disc parameters
+;
+;--------------------------------------------------------------
+
+	dseg
+def.dsk:	db	0		; Selected disc
+
+dpb:				; Drive disk parameter block
+dpb.spt:	ds	2
+dpb.bsh:	ds	1
+dpb.blm:	ds	1
+dpb.exm:	ds	1
+dpb.dsm:	ds	2
+dpb.drm:	ds	2
+dpb.al0:	ds	1
+dpb.al1:	ds	1
+dpb.cks:	ds	2
+dpb.off:	ds	2
+len.dpb2	equ	$-dpb	; length of CP/M 2 dpb
+dpb.psh:	ds	1
+dpb.phm:	ds	1
+len.dpb3	equ	$-dpb	; length of CP/M + dpb
+
+dph2:				; CP/M 2 disk parameter header
+dph2.xlt:	ds	2
+dph2.zro:	ds	6
+dph2.dir:	ds	2
+dph2.dpb:	ds	2
+dph2.csv:	ds	2
+dph2.alv:	ds	2
+len.dph2	equ	$-dph2	; length of CP/M 2 dph
+
+dph3:				; CP/M + disk parameter header
+dph3.xlt:	ds	2
+dph3.zro:	ds	9
+dph3.mf:	ds	1
+dph3.dpb:	ds	2
+dph3.csv:	ds	2
+dph3.alv:	ds	2
+dph3.dir:	ds	2
+dph3.dat:	ds	2
+dph3.hsh:	ds	2
+dph3.bnk:	ds	1
+len.dph3	equ	$-dph3	; length of CP/M + dph
+
+dpb.ptr:	dw	0	; address of dpb
+dph.ptr:	dw	0	; address of dph
+
+vers:				; O.S. Version number
+vers.rel:	ds	1	; O.S. Version/Release number
+vers.os:	ds	1	; O.S. number
+
+posn:	dw	0	; pointer to text string
+
+; ------;
+; stack ;
+; ------;
+	ds	64		; dont know how much stack BIOS requires
+savesp:	dw	0
+
+; ----------------;
+; address equates ;
+; ----------------;
+ 
+bdos	equ	5		; BDOS entry point
+deffcb	equ	5ch		; CCP puts default FCB here
+defdma	equ	80h		; CCP sets default DMA here
+
+; -----------------;
+; constant equates ;
+; -----------------;
+ 
+bs	equ	08h		; <BACK SPACE>
+cr	equ	0dh		; <RETURN>
+lf	equ	0ah		; <LINE FEED>
+jump	equ	0c3h		; JP instruction
+
+	cseg
+
+;-------------------------------------------------------------------------;
+	page
+
+
+;-------;
+; start ;
+;-------;
+	cseg
+
+
+	ld	c,12		; BDOS: RETURN VERSION NUMBER
+	call	bdos
+	ld	(vers),hl
+	ld	a,h
+	cp	00h	; check for CP/M
+	jp	nz,badvers
+;
+	ld	a,l
+	cp	22h
+	jp	z,goodvers
+;
+	ld	a,l
+	cp	31h
+	jp	z,goodvers
+
+	page
+			; ================= ;
+			; various utilities ;
+			; ================= ;
+
+; -------------- ;
+; Error routines ;
+; -------------- ;
+
+BADSEL:
+	ld	de,selmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	ld	c,0		;BDOS: SYSTEM RESET
+	jp	bdos		; and crash out
+
+	dseg
+selmsg:	db	'FATAL ERROR - Unable to select drive','$'	
+	cseg
+
+badvers:
+	ld	de,vermsg
+	ld	c,9		;BDOS: PRINT STRING
+	jp	bdos		; & RETURN
+	dseg
+vermsg:	db	'MUST USE CP/M 2.2 OR CP/M 3.1','$'	
+	cseg
+
+; --------------------------- ;
+; Direct calls to CP/M 2 BIOS ;
+; --------------------------- ;
+
+BIOS:
+	push	de		; must save DE as sometimes passed to BIOS
+	ex	de,hl
+	ld	hl,(1)		; pointer to BIOS WARM BOOT
+	ld	a,(hl)
+	cp	jump		; check actually pointing to BIOS (not XSUB)
+	jp	nz,badbios
+	add	hl,de		; DE = offset from WARM BOOT to BIOS function
+	pop	de
+	ld	a,(hl)
+	cp	jump		; check actually pointing to BIOS (not XSUB)
+	jp	nz,badbios
+	jp	(hl)
+
+badbios:			; (NOTE DE may be on stack)
+	ld	de,jmpmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	ld	c,0		;BDOS: SYSTEM RESET
+	jp	bdos		; and crash out
+
+	dseg
+jmpmsg:	db	'FATAL ERROR - Unable to find BIOS','$'	
+	cseg
+
+
+; --------------------------- ;
+; Direct calls to CP/M 3 BIOS ;
+; --------------------------- ;
+
+	dseg
+BIOSPB:
+BIOS.FUNC:	ds	1	; BIOS function number (WARM BOOT = 1)
+BIOS.AREG:	ds	1	; A register contents
+BIOS.BCREG:	ds	2	; BC register contents
+BIOS.DEREG:	ds	2	; DE register contents
+BIOS.HLREG:	ds	2	; HL register contents
+	cseg
+
+
+	page
+
+; ------------------------------ ;
+; Conversion into HEX characters ;
+; ------------------------------ ;
+
+;-----------------------------------------------------------------------;
+; HEXBYT								;
+; Input:	<B> = Count of bytes to be converted			;
+;		<HL> -> first byte to be translated			;
+;		POSN = pointer to text field				;
+; Destroys:	All registers						;
+; Function:	Converts <B> bytes starting at <HL> into 2 digit	;
+;		hexadecimal characters which are added to next		;
+;		hexadecimal field in the text string. POSN is updated	;
+;		to point to the end of this hexadecimal field.		;
+;-----------------------------------------------------------------------;
+
+;-----;
+hexbyt:
+;-----;
+	push	hl
+	push	bc
+	ld	a,(hl)
+	call	bythex
+	pop	bc
+	pop	hl
+	inc	hl
+	djnz	hexbyt
+	ret
+
+;-----------------------------------------------------------------------;
+; HEXTBL								;
+; Input:	<B> = Count of bytes to be converted			;
+;		<HL> -> start of array of <B> byte to be translated	;
+;		<DE> -> start of table of conversion formats		;
+;			1 = single byte					;
+;			2 = pair of bytes to be combined as one word	;
+;			3 = pair of bytes to reversed in text fields	;
+;		POSN = pointer to text field				;
+; Destroys:	All registers						;
+; Function:	Converts <B> bytes starting at <HL> according to	;
+;		format type in table pointed at by <DE>. Each entry	;
+;		in the table <DE> corresponds to field positions.	;
+;-----------------------------------------------------------------------;
+
+;-----;
+hextbl: 
+;-----;
+	ld	a,(de)
+	push	de
+	cp	2
+	jp	z,hextbl2
+	cp	3
+	jp	z,hextbl3
+
+; byte
+	ld	a,(hl)
+	push	bc
+	push	hl
+	call	bythex
+	jp	nxttbl
+
+; word
+hextbl2:
+	dec	b	; decrement <B> as using two bytes
+	push	bc
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	push	hl
+	ex	de,hl
+	call	wrdhex	; <HL> -> text
+	jp	nxttbl
+
+; double byte
+hextbl3:
+	dec	b	; decrement <B> as using two bytes
+	push	bc
+	inc	hl
+	ld	a,(hl)	; display 2nd byte first
+	dec	hl
+	push	hl
+	call	bythex
+	pop	hl
+	ld	a,(hl)	; display 1st byte next
+	inc	hl
+	push	hl
+	call	bythex
+
+nxttbl:	pop	hl
+	pop	bc
+	pop	de
+	inc	de
+	inc	hl
+	djnz	hextbl
+	ret
+
+;-----------------------------------------------------------------------;
+; WRDHEX								;
+; Input:	<HL>  = word to converted into hexadecimal text		;
+;		POSN = pointer to text field				;
+; Destroys:	All registers						;
+; Function:	Converts word in <HL> into four hexadecimal characters	;
+;		which are added to next hexadecimal field in the	;
+;		text string. POSN is updated to point to the end	;
+;		of this hexadecimal field.				;
+;-----------------------------------------------------------------------;
+
+;-----;
+wrdhex:			; display hex word in <HL> into text
+;-----;
+
+	push	hl	; must preserve HL
+	call	nexthex	; returns DE -> 'h'
+	dec	de
+	dec	de
+	dec	de
+	dec	de
+	pop	hl
+	push	hl
+	ld	a,h
+	call	outnbl
+	pop	hl
+	ld	a,l
+	call	outnbl
+	ret
+
+;-----------------------------------------------------------------------;
+; DBLHEX								;
+; Input:	<HL>  = word to converted into hexadecimal text		;
+;		POSN = pointer to text field				;
+; Destroys:	All registers						;
+; Function:	Converts word in <HL> into two pairs of hexadecimal	;
+;		characters with the high byte displayed first. Each is	;
+;		added to the next hexadecimal field in the text string.	;
+;		POSN is updated to point to the end of the second	;
+;		is hexadecimal field.					;
+;-----------------------------------------------------------------------;
+
+;-----;
+dblhex:			; display high hex byte into text
+;-----;
+	ld	a,h
+	push	hl
+	call	bythex
+	pop	hl
+			; display high hex byte into text
+	ld	a,l
+	jp	bythex
+
+;-----------------------------------------------------------------------;
+; BYTHEX								;
+; Input:	<A>  = byte to converted into hexadecimal text		;
+;		POSN = pointer to text field				;
+; Destroys:	All registers						;
+; Function:	Converts byte in <A> into two hexadecimal characters	;
+;		which are added to next hexadecimal field in the	;
+;		text string. POSN is updated to point to the end	;
+;		of this hexadecimal field.				;
+;-----------------------------------------------------------------------;
+
+;-----;
+bythex:			; converts byte in <A> into hexadecimal text
+;-----;
+	push	af
+	call	nexthex	; returns DE -> 'h'
+	dec	de
+	dec	de
+	pop	af
+	call	outnbl
+	ret
+
+;-----;
+outnbl:			; convert byte in <A> into two hex chars at <DE>
+;-----;
+	push	af
+	rrca
+	rrca
+	rrca
+	rrca
+	call	nblhex
+	pop	af
+;-----;
+nblhex:			; convert nibble in A into hex char in (DE)
+;-----;
+	and	0fh
+	ld	c,a
+	ld	b,0
+	ld	hl,hextxt
+	add	hl,bc
+	ld	a,(hl)
+	ld	(de),a
+	inc	de
+	ret
+
+;-----------------------------------------------------------------------;
+; NEXTHEX								;
+; Input:	POSN = pointer to text field				;
+; Returns:	<DE> -> to end of hexadecimal filed			;
+; Destroys:	<A>, <BC>, <HL> 					;
+; Function:	Starting at location (POSN), scans text for hexadecimal ;
+;		field of the form ??h or ????h where ? is any valid	;
+;		hexadecimal character (0123456789ABCDEF). POSN is	;
+;		updated to point to the end of this hexadecimal field.	;
+;-----------------------------------------------------------------------;
+
+
+testhex:
+	cp	cr	; check if end of line, as must not pass this
+	ret	z	; even if this means overwriting text.
+
+;------;
+nexthex:		; find next hex location in text
+;------;
+
+	call	hexchr	; find first hex character
+	jp	nz,testhex
+	call	hexchr	; find second hex character
+	jp	nz,testhex
+	inc	de
+	ld	a,(de)
+	cp	'h'
+	jp	nz,testhex
+	ret
+
+hexchr:	ld	hl,(posn)
+	inc	hl
+	ld	a,(hl)
+	ld	d,h
+	ld	e,l
+	cp	cr		; test for end of line
+	ret	z	
+	ld	(posn),hl	; update POSN
+	ld	hl,hextxt
+	ld	b,16
+nxt1:	cp	(hl)
+	ret	z
+	inc	hl
+	djnz	nxt1
+	or	-1
+	ret
+	dseg
+hextxt:	db	'0123456789ABCDEF'
+	cseg
+
+	page
+			; ================= ;
+			; various functions ;
+			; ================= ;
+
+
+; ------------------------------ ;
+; Wait for <RETURN> for keyboard ;
+; ------------------------------ ;
+
+waitcr:
+	ld	de,crmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	ld	c,10	; DIRECT CONSOLE BUFFER
+	ld	de,waitbuff
+	call	bdos
+	ld	a,(waitlen)
+	or	a
+	ret	z
+	jp	waitcr
+
+	dseg
+crmsg:	db	cr,lf,'Hit <RETURN> to continue ','$'
+waitbuff:
+	db	1
+waitlen:
+	ds	1
+	ds	1
+	cseg	
+
+
+; ---------------------------- ;
+; Fetch DPH and DPB for device ;
+; ---------------------------- ;
+
+fetchdp:
+	call	getdpb
+
+	ld	a,(vers.rel)
+	cp	22h
+	call	z,getdph2
+
+	ld	a,(vers.rel)
+	cp	31h
+	call	z,getdph3
+
+	ret
+
+; ---------------- ;
+; Fetch CP/M 2 DPH ;
+; ---------------- ;
+
+getdph2:
+
+	ld	a,(def.dsk)	; Current selected disk
+	ld	c,a		; BIOS: Disk drive to select
+	ld	e,-1		; Not first time login
+	ld	hl,001bh-0003h	; offset from WARM BOOT to select function
+	call	BIOS
+	ld	a,l
+	or	h
+	jp	z,badsel
+
+	ld	(dph.ptr),hl	; save address of DPH
+	ld	de,dph2
+	ld	bc,len.dph2
+	ldir
+
+	ret
+
+; ---------------- ;
+; Fetch CP/M + DPH ;
+; ---------------- ;
+
+getdph3:
+
+	ld	a,(def.dsk)	; Current selected disk
+	ld	(BIOS.BCREG),a	; save in BIOSPB
+
+	ld	hl,-1		; Not first time login
+	ld	(BIOS.DEREG),hl	; save in BIOSPB
+
+	ld	a,9		; BIOS: select the sepcified disk drive
+	ld	(BIOS.FUNC),a	; save in BIOSPB
+
+	ld	c,50		;BDOS: DIRECT BIOS CALL
+	ld	de,BIOSPB	; BIOS parameter block
+	call	bdos		; IMPORTANT: dont trace this as BDOS
+				; copies DPH into keyboard character buffer
+	ld	a,l		; BDOS returns address of its copy of DPH
+	or	h
+	jp	z,badsel
+
+	ld	(dph.ptr),hl	; save address of DPH but this is of no value
+	ld	de,dph3
+	ld	bc,len.dph3
+	ldir
+
+	ret
+
+; --------- ;
+; Fetch DPB ;
+; --------- ;
+
+getdpb:
+
+	ld	c,31		;BDOS: GET ADDR (DPB PARMS)
+	call	bdos
+
+	ld	(dpb.ptr),hl	; save address of DPB
+	ld	de,dpb
+	ld	bc,len.dpb3	; copy maximum length regardless
+	ldir 
+
+	ret
+
+;--------;
+clearscrn:	; clear screen
+;--------;
+	ld	de,csnmsg
+	ld	c,9		;BDOS: PRINT STRING
+	jp	bdos		; & RETURN
+	dseg
+csnmsg:	db	cr,lf,lf,lf,lf,lf,lf,lf,lf,lf,lf
+	db	cr,lf,lf,lf,lf,lf,lf,lf,lf,lf,lf
+	db	cr,lf,lf,lf,lf,lf,'$'		; 25 line feeds
+	cseg
+
+;------;
+screen1:		; display menu
+;------;
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(s1dsk),a
+	ld	de,s1msg
+	ld	c,9		;BDOS: PRINT STRING
+	jp	bdos		; & RETURN
+	dseg
+s1msg:	db	cr,'MML:DISKSTAT         DRIVE '
+s1dsk:	db	'A: CHARACTERISTICS '
+	db	cr,lf,lf,lf,lf,lf,lf,lf,lf,lf,lf	; 10 line feeds
+	db	cr,lf,'                   1    Display DPB statistics '
+	db	cr,lf,'                   2    Display DPH statistics '
+	db	cr,lf,'                   3    Display disk ALLOCATION '
+	db	cr,lf;later,'                   4    Display file ALLOCATION '
+	db	cr,lf;later,'                   5    Display directory ALLOCATION '
+	db	cr,lf,'                   9    Select new disk '
+	db	cr,lf,lf,lf,lf,'$'		; 5 line feeds
+	cseg
+
+;-----;
+option:			; request option
+;-----;
+
+	ld	de,optmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	ld	de,optbuf
+	ld	c,10		;BDOS: READ CONSOLE BUFFER
+	call	bdos
+
+	ld	a,(optlen)
+	cp	0
+	jp	z,optquit
+	cp	1
+	jp	nz,option
+
+	ld	a,(optchr)
+	cp	'1'
+	jp	c,option
+	cp	'9'+1
+	jp	nc,option	; value in range 1 to 9
+	sub	'0'
+
+	ret
+
+optquit:
+	or	-1
+	ret
+
+	dseg
+optmsg:	db	cr,'     Enter your choice, or <RETURN>   ',bs,bs,'$'
+optbuf:	db	2	; maximum length of buffer
+optlen:	ds	1	; number of characters returned
+optchr:	ds	2	; space for up to 2 characters
+	cseg
+
+
+;------;
+makehex:		; module in showblk
+;------;
+
+
+;	'   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 '
+;sdbbyt	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h'
+;	'     SPT  BSH BLM EXM    DSM     DRM  AL0-AL1    CKS     OFF  PSH PHM'
+;sdbhex	'    0000h 00h 00h 00h   0000h   0000h 00h 00h   0000h   0000h 00h 00h'
+
+	ld	hl,sdbbyt
+	ld	(posn),hl
+
+	ld	a,(vers.rel)
+	cp	31h
+	jp	z,makeh3
+
+	xor	a		; CP/M 2  does not have PSH & PHM
+	ld	(dpb.psh),a	; - set to zero
+	ld	(dpb.phm),a
+
+makeh3:
+
+	ld	hl,dpb
+	ld	b,17
+	call	hexbyt
+
+	ld	hl,sdbhex
+	ld	(posn),hl
+
+	ld	hl,dpb
+	ld	b,17
+	ld	de,hbtype
+	call	hextbl
+
+	ret
+
+	dseg
+hbtype:	db	2,1,1,1,2,2,1,1,2,2,1,1
+	cseg
+
+
+;------;
+makedec:		; module in showblk
+;------;
+
+	ld	hl,sdbdec
+	ld	(posn),hl
+
+	ld	hl,(dpb.spt)
+	call	wrddec		; <HL> -> text
+
+	ld	a,(dpb.bsh)
+	call	bytdec		; <A> -> text
+	ld	a,(dpb.blm)
+	call	bytdec		; <A> -> text
+
+	ld	a,(dpb.exm)
+	call	bytdec		; <A> -> text
+
+	ld	hl,(dpb.dsm)
+	call	wrddec		; <HL> -> text
+
+	ld	hl,(dpb.drm)
+	call	wrddec		; <HL> -> text
+
+	ld	a,(dpb.al0)
+	call	bytdec		; <A> -> text
+	ld	a,(dpb.al1)
+	call	bytdec		; <A> -> text
+
+	ld	hl,(dpb.cks)
+	call	wrddec		; <HL> -> text
+
+	ld	hl,(dpb.off)
+	call	wrddec		; <HL> -> text
+
+	ld	a,(vers.rel)
+	cp	31h
+	jp	nz,dec2
+
+	ld	a,(dpb.psh)
+	call	bytdec		; <A> -> text
+	ld	a,(dpb.phm)
+	call	bytdec		; <A> -> text
+
+	ret
+
+dec2:	xor	a
+	call	bytdec		; <A> -> text
+	xor	a
+	call	bytdec		; <A> -> text
+	ret
+
+errdec:			; fill display with 3 asterisks as error
+	call	nextdec	; <DE> -> leftmost digit
+	ld	a,'*'	; set 1st 3 digits to '*'
+	ld	(de),a
+	dec	de
+	ld	(de),a
+	dec	de
+	ld	(de),a
+	ret
+
+
+bytdec:			; display byte in A as decimal characters
+	ld	h,0
+	ld	l,a
+
+wrddec:			; display word in HL as decimal characters
+	ld	bc,0
+	jp	txtdec
+
+megdec:			; display byte,word in C & HL as decimal characters
+	ld	b,0
+
+gigdec:			; display double word in BC & HL as decimal characters
+
+
+txtdec:
+	ex	de,hl
+	push	de	; save 4 bytes of binary number
+	push	bc
+	call	nextdec	; <DE> -> leftmost digit
+	pop	bc
+	pop	de
+	call	tobcd	; converts <B>, <C>, <D>, <E> into bcd at BCD
+	ld	hl,(posn)
+	ex	de,hl	; recover <DE> -> leftmost digit
+	ld	a,'0'	; initialise 1st digit to a zero
+	ld	(de),a	; (just to make sure )
+
+	ld	hl,bcdlsb	; start with least significent digit
+txtdec1:
+	call	txtbcd
+	ret	z
+	dec	hl
+	jp	txtdec1	; continue till all 10 digits done
+
+txtbcd:			; HL -> bcd digit, <DE> -> txt postion
+	call	zrobcd	; zero when no more BCD digits (destroys <A>, <BC>)
+	ret	z
+	ld	a,(hl)
+	add	a,'0'
+	ld	(de),a
+	dec	de
+	xor	a
+	ld	(hl),a	; zero BCD byte ESSENTIAL to exit when done
+	or	-1
+	ret
+
+zrobcd: 		; test for all bytes of BCD being zero
+			; this is important as eventually all bytes
+			; will be set to zero during transfer to text
+	push	hl
+	ld	hl,bcd
+	xor	a
+	ld	b,10
+nxtzro:	or	(hl)
+	inc	hl
+	djnz	nxtzro
+	pop	hl
+	ret
+
+;----;
+tobcd:			; print binary number 0-65535 from <HL>
+;----;
+	ld	hl,binary
+	ld	(hl),e	; least significant digit
+	inc	hl
+	ld	(hl),d
+	inc	hl
+	ld	(hl),c
+	inc	hl
+	ld	(hl),b	; most significent digit
+
+	push	bc
+	ld	hl,bcd
+	ld	b,10
+	xor	a
+setbcd:	ld	(hl),a
+	inc	hl
+	djnz	setbcd	; first zero all digits
+	pop	bc
+
+	ld	a,b
+	or	a
+	jp	nz,upgig
+
+	ld	a,c
+	or	a
+	jp	nz,upmeg
+
+	ld	a,d
+	or	a
+	jp	nz,upwrd
+
+	ld	a,e
+	or	a
+	jp	nz,upbyt
+	ret			; number is zero so return
+
+upbyt:	ld	bc,bcdbyt	; start of BCD pointer
+	ld	hl,byt10
+	jp	upnxt
+
+upwrd:	ld	bc,bcdwrd	; start of BCD pointer
+	ld	hl,wrd10
+	jp	upnxt
+
+upmeg:	ld	bc,bcdmeg	; start of BCD pointer
+	ld	hl,meg10
+	jp	upnxt
+
+upgig:	ld	bc,bcdgig	; start of BCD pointer
+	ld	hl,gig10
+;
+upnxt:	ld	de,binary	; binary number to be converted
+	push	bc		; save BCD pointer
+	ld	c,-1
+pdecl:	push	hl
+	push	de
+	inc	c
+	xor	a
+	ld	b,4
+ndecl:	ld	a,(de)
+	adc	a,(hl)
+	ld	(de),a	; and reduce count
+	inc	de
+	inc	hl
+	djnz	ndecl	; this doesnt effect any flags
+	pop	de
+	pop	hl
+	jp	c,pdecl	; repeatedly subtract amount till carry set
+	push	hl
+	push	de
+	xor	a
+	ld	b,4
+nincl:	ld	a,(de)
+	sbc	a,(hl)
+	ld	(de),a	; and increase
+	inc	de
+	inc	hl
+	djnz	nincl	; this doesnt effect any flags
+	pop	de
+	inc	sp
+	inc	sp	; loose <HL> (digits) saved on stack
+	ld	a,c
+	pop	bc	; pointer to BCD
+	ld	(bc),a
+	inc	bc
+	ld	a,(hl)
+	or	a
+	jp	nz,upnxt
+
+	ret
+
+	dseg
+
+bcd:			; 10 bytes, 10 digits of BCD text
+bcdgig:			; max number is 4294967295
+bcd.0:	db	4
+bcd.1:	db	2
+bcdmeg:			; max number is 16777215
+bcd.2:	db	9
+bcd.3:	db	4
+bcd.4:	db	9
+bcdwrd:			; max number is 65535
+bcd.5:	db	6
+bcd.6:	db	7
+bcdbyt:			; max number is 255
+bcd.7:	db	2
+bcd.8:	db	9
+bcdlsb:
+bcd.9:	db	5
+
+gig10:	dw	 13824,-15259	; -1000000000 (C465 3600H)
+	dw	  7936, -1526	;  -100000000 (FA0A 1F00H)
+meg10:	dw	 27008,  -153	;   -10000000 (FF67 6980H)
+	dw	-16960,   -16	;    -1000000 (FFF0 BDC0H)
+	dw	 31072,    -2	;     -100000 (FFFE 7960H)
+wrd10:	dw	-10000,    -1	;      -10000 (FFFF D8F0H)
+	dw	 -1000,    -1	;       -1000 (FFFF FC18H)
+byt10:	dw	  -100,    -1	;        -100 (FFFF FF9CH)
+	dw	   -10,    -1	;         -10 (FFFF FFF6H)
+	dw	    -1,    -1	;          -1 (FFFF FFFFH)
+	dw	     0,     0	;           0 (0000 0000H) this terminates all
+
+binary:	db	0,0,0,0	; binary number filled from E, D, C, & B
+
+	cseg
+
+testdec:
+	cp	cr
+	ret	z	
+nextdec:		; find next dec location in text and convert to space
+			; and return DE -> to end of 00h string
+
+	call	decchr	; find first dec character
+	jp	nz,testdec
+nxt3:	ld	a,' '	; erase each digit as we go
+	ld	(de),a
+	call	decchr	; scan subsequent dec characters
+	jp	z,nxt3
+	dec	de
+	ld	a,'0'
+	ld	(de),a	; initialise 1st digit to a zero
+	ex	de,hl
+	ld	(posn),hl
+	ret
+
+decchr:	ld	hl,(posn)
+	inc	hl
+	ld	a,(hl)
+	ld	d,h
+	ld	e,l
+	cp	cr
+	ret	z	
+	ld	(posn),hl
+	ld	hl,dectxt
+	ld	b,11
+nxt2:	cp	(hl)
+	ret	z
+	inc	hl
+	djnz	nxt2
+	or	-1
+	ret
+	dseg
+dectxt:	db	'0123456789+*'	; + used for bit flag, * used for errors
+	cseg
+
+;------;
+makemax:		; module in showblk
+;------;
+
+;'          BLOCK       EXTENT      MAX DISK    DIRECTORY   CHECK SUM   SECTOR'
+;'          SIZE (K)    FOLDS       SIZE (K)    ENTRIES     ENTRIES     SIZE'
+;'DPB(DEC):  16K          15        1048576      65536       65536      32768'
+
+	ld	hl,sdbmax
+	ld	(posn),hl
+
+	ld	a,(dpb.bsh)
+	ld	hl,128
+	or	a
+	jp	z,makem2
+makem1:	add	hl,hl
+	dec	a
+	jp	nz,makem1
+makem2:	ld	a,h		; /256
+	rrca			; /512
+	rrca			; /1024
+	push	af
+	ld	a,(dpb.blm)
+	ld	bc,-128
+	or	a
+	jp	z,makem4
+makem3:	add	hl,bc
+	dec	a
+	jp	nz,makem3
+makem4:	add	hl,bc
+	pop	af		; recover K
+	ld	b,a		; and save
+	ld	a,h
+	or	l
+	ld	a,b
+	push	af
+	call	nz,errdec
+	pop	af
+	call	z,bytdec	; <A> -> text
+
+	ld	a,(dpb.blm)
+	add	a,1	;+1
+	rra
+	rra
+	rra		;/8
+	ld	b,a	; save EXM+1
+	ld	hl,(dpb.dsm)
+	xor	a	; (there must be an easier way)
+	sub	h
+	dec	a
+	ccf
+	adc	a,h	; a = 0 if H = 0, else a = -1
+	and	b
+	add	a,b
+	add	a,-1	;-1  (convert into EXM)
+	ld	b,a	; and save	
+
+	ld	a,(dpb.exm)
+	cp	b
+	push	af
+	call	nz,errdec
+	pop	af
+	call	z,bytdec	; <A> -> text
+
+	xor	a
+	ld	hl,(dpb.dsm)
+	ld	bc,1
+	add	hl,bc		; increment dsm by 1
+	adc	a,0
+	ld	c,a		; and save in C
+	ld	a,(dpb.bsh)
+	add	a,-3
+	ld	b,a
+	or	a
+	ld	a,c		; giga byte
+	jp	z,makem6
+makem5:	add	hl,hl
+	adc	a,0
+	djnz	makem5
+makem6:	ld	c,a
+	call    megdec		; <C> & <HL> -> text
+
+	xor	a
+	ld	hl,(dpb.drm)
+	ld	bc,1
+	add	hl,bc		; increment drm by 1
+	adc	a,0
+	ld	c,a
+	call    megdec		; <C> & <HL> -> text
+
+	ld	hl,(dpb.drm)
+	ld	a,h
+	and	a
+	rra
+	ld	h,a
+	ld	a,l
+	rra
+	ld	l,a	; /2
+	ld	a,h
+	and	a
+	rra
+	ld	h,a
+	ld	a,l
+	rra
+	ld	l,a	; /4
+	ld	d,h
+	ld	e,l
+	inc	de	; DE=HL+1
+
+	ld	hl,(dpb.cks)
+	ld	a,h
+	or	l
+	jp	z,makem8	; no check sum
+	ld	a,h
+	and	7fh
+	or	l
+	jp	z,makem7	; bit 15 set for non removable
+	sbc	hl,de
+	ex	de,hl
+	jp	z,makem8
+	call	errdec
+	jp	makem9
+makem8:	ld	c,0
+	call	mmegx4		; <C>, <HL> * 4
+	call	megdec		; <C> & <HL> -> text
+	jp	makem9
+makem7: xor	a
+	call	nextdec
+	dec	de
+	ld	a,'+'
+	ld	(de),a
+	inc	de
+	inc	de
+makem9:
+
+	ld	a,(vers.rel)
+	cp	31h
+	jp	nz,makem0
+
+	ld	a,(dpb.psh)
+	ld	hl,128
+	or	a
+	jp	z,make02
+make01:	add	hl,hl
+	dec	a
+	jp	nz,make01
+make02:	push	hl
+	ld	a,(dpb.phm)
+	ld	bc,-128
+	or	a
+	jp	z,make04
+make03:	add	hl,bc
+	dec	a
+	jp	nz,make03
+make04:	add	hl,bc
+	ld	a,h
+	or	l
+	pop	hl
+	push	af
+	call	nz,errdec
+	pop	af
+	call	z,wrddec	; <HL> -> text
+
+	ret
+
+makem0:	ld	hl,128		; CP/M 2 sector size
+	call	wrddec		; <HL> -> text
+	ret
+
+
+;--------;
+makedir:		; module in showblk
+;--------;
+
+;'                             Data       1K    128 byte  '
+;'                            Blocks    Blocks   Records    Capacity'
+;'              Directory      65535  16777215  16777215    16777215 Entries'
+;'              Data           65535  16777215  16777215  4294967296 Bytes'
+;'                             65000  16777215  16777215'
+
+	dseg
+dirdb:	db	0	; save number of director blocks
+dbsize:	db	0	; save data block size in K
+	cseg
+
+	ld	hl,sdbdir
+	ld	(posn),hl
+
+	ld	hl,(dpb.al0)
+	xor	a
+	ld	b,16
+maked0:	add	hl,hl
+	adc	a,0
+	djnz	maked0	; number of directory data blocks
+	ld	(dirdb),a
+
+	call	bytdec		; <A> -> text
+
+	ld	a,(dpb.bsh)
+	ld	hl,128
+	or	a
+	jp	z,maked2
+maked1:	add	hl,hl
+	dec	a
+	jp	nz,maked1
+maked2:	ld	a,h		; /256
+	rrca			; /512
+	rrca			; /1024
+	ld	(dbsize),a	; save data block size in K
+
+	ld	c,a
+	ld	b,0
+	ld	a,(dirdb)
+	ld	hl,0
+	or	a
+	jp	z,maked4
+maked3:	add	hl,bc
+	dec	a
+	jp	nz,maked3
+maked4:	push	hl
+	call	wrddec		; <HL> -> text
+	pop	hl
+
+	ld	c,0
+	call	mmegx8		; multiply by 8
+
+	push	hl
+	push	bc
+	call	megdec	; number of records (<C> & <HL> -> text)
+	pop	bc
+	pop	hl
+
+	call	mmegX4	; multiply by 4
+	call	megdec	; number of entries (<C> & <HL> -> text)
+	ret
+
+;--------;
+makedat:		; module in showblk
+;--------;
+
+;'                             Data       1K    128 byte  '
+;'                            Blocks    Blocks   Records    Capacity'
+;'              Directory      65535  16777215  16777215    16777215 Entries'
+;'              Data           65535  16777215  16777215  4294967296 Bytes'
+;'                             65000  16777215  16777215'
+
+	ld	hl,sdbdat
+	ld	(posn),hl
+
+	ld	hl,(dpb.dsm)	; total disk blocks
+	ld	a,(dirdb)	; blocks reserved for directory
+	dec	a
+	ld	c,a
+	ld	b,0
+	sbc	hl,bc		; leaving number of data blocks
+	push	hl
+	call	wrddec		; <HL> -> text
+	pop	hl
+
+	xor	a
+	ld	b,a
+	ld	c,a	; BC = 0
+
+	ld	a,(dpb.blm)
+	inc	a
+	rrca
+	rrca
+	rrca		; /8
+	dec	a
+	or	a
+	jp	z,maked6
+maked5:	push	af
+	call	mgigx2
+	pop	af
+	dec	a
+	jp	nz,maked5
+maked6:	push	bc
+	push	hl
+	call	gigdec	; 1K blocks (<BC> & <HL> -> text)
+	pop	hl
+	pop	bc
+	call	mgigx8	; multiply B,C,H,& L by 8
+
+	push	hl
+	push	bc
+	call	gigdec	; number of records (<BC> & <HL> -> text)
+	pop	bc
+	pop	hl
+	
+	call	mgigx128	; multiply B,C,H,& L by 128
+	call	gigdec	; number of bytes (<BC> & <HL> -> text)
+
+	ret
+
+;--------;
+maketot:		; module in showblk
+;--------;
+
+;'                             Data       1K    128 byte  '
+;'                            Blocks    Blocks   Records    Capacity'
+;'              Directory      65535  16777215  16777215    16777215 Entries'
+;'              Data           65535  16777215  16777215  4294967296 Bytes'
+;'                             65000  16777215  16777215'
+
+	ld	hl,sdbtot
+	ld	(posn),hl
+
+	xor	a
+	ld	bc,1
+	ld	hl,(dpb.dsm)	; total disk blocks
+	add	hl,bc
+	adc	a,a
+	ld	c,a
+
+	push	bc
+	push	hl
+	call	wrddec		; <HL> -> text
+	pop	hl
+	pop	bc
+
+	ld	a,(dpb.blm)
+	inc	a
+	rrca
+	rrca
+	rrca		; /8
+	dec	a
+	or	a
+	jp	z,maked8
+maked7:	push	af
+	call	mgigx2
+	pop	af
+	dec	a
+	jp	nz,maked7
+maked8:	push	bc
+	push	hl
+	call	gigdec	; 1K blocks (<BC> & <HL> -> text)
+	pop	hl
+	pop	bc
+
+	call	mgigx8	; multiply B,C,H,& L by 8
+	call	gigdec	; number of records (<BC> & <HL> -> text)
+	
+	ret
+
+mmegx8:	call	mmegx2	; multiply C,H,& L by 8
+mmegx4:	call	mmegx2	; multiply C,H,& L by 4
+mmegx2:	ld	a,l	; multiply C,H,& L by 2
+	add	a,a
+	ld	l,a
+	ld	a,h
+	adc	a,a
+	ld	h,a
+	ld	a,c
+	adc	a,a
+	ld	c,a
+	ret
+
+mgigx8:	call	mgigx2	; multiply B,C,H,& L by 8
+mgigx4:	call	mgigx2	; multiply B,C,H,& L by 4
+mgigx2:	ld	a,l	; multiply B,C,H,& L by 2
+	add	a,a
+	ld	l,a
+	ld	a,h
+	adc	a,a
+	ld	h,a
+	ld	a,c
+	adc	a,a
+	ld	c,a
+	ld	a,b
+	adc	a,a
+	ld	b,a
+	ret
+
+mgigx128:		; multipy B,C,H,& L by 128
+	ld	a,b
+	and	a
+	rra		; we can only use lowest bit
+	ld	a,c
+	rra
+	ld	b,a
+	ld	a,h
+	rra
+	ld	c,a
+	ld	a,l
+	rra
+	ld	h,a
+	ld	a,0
+	rra
+	ld	l,a
+	ret
+
+
+
+;------;
+showblk:	; menu 1 option 1    Display DPB statistics
+;------;
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(sdbdsk),a
+
+	call	makehex
+
+	call	makedec
+
+	call	makemax
+
+	call	makedir
+
+	call	makedat
+
+	call	maketot
+
+
+	ld	de,sdbmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	call	waitcr
+
+	ret
+
+	dseg
+sdbmsg:
+	db	cr,   '                         DRIVE '
+sdbdsk:	db	'A: DISC PARAMETER BLOCK'
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16 '
+	db	cr,lf,'DPB:     '
+sdbbyt:	db	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h'
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'     SPT  BSH BLM EXM    DSM     DRM  AL0-AL1    CKS     OFF  PSH PHM'
+	db	cr,lf,'DPB(HEX):'
+sdbhex:	db	'    0000h 00h 00h 00h   0000h   0000h 00h 00h   0000h   0000h 00h 00h'
+	db	cr,lf,'DPB(DEC):'
+sdbdec:	db	'   65535  255 255 255  65535   65535  255 255  65535   65535  255 255'
+	db	cr,lf
+	db	cr,lf,'          BLOCK       EXTENT      MAX DISK    DIRECTORY   CHECK SUM   SECTOR'
+	db	cr,lf,'          '
+	db	'SIZE (K)    FOLDS       SIZE (K)    ENTRIES     ENTRIES     SIZE'
+	db	cr,lf,'DPB(DEC): '
+sdbmax:	db	' 16K          15        1048576      65536       65536      32768'
+sdberr:	db	cr,lf,'                                                                            '
+	db	cr,lf
+	db	cr,lf,'ALLOCATION OF DISK BLOCKS'
+	db	cr,lf,'                             Data       1K    128 byte  '
+	db	cr,lf,'                            Blocks    Blocks   Records    Capacity'
+	db	lf
+sdbdir:	db	cr,lf,'              Directory      65535  16777215  16777215    16777215 Entries'
+sdbdat:	db	cr,lf,'              Data           65535  16777215  16777215  4294967296 Bytes'
+	db	cr,lf,'                          --------  --------  --------'
+sdbtot:	db	cr,lf,'                             65000  16777215  16777215'
+	db	lf
+	db	'$'
+	cseg
+
+;------;
+makedph3:	; menu 1 option 2    Display DPH statistics
+;------;
+
+;	'   0   1   2   3   4   5   6   7   8   9  10  11  '
+;s3byt1	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+;	'  12  13  14  15  16  17  18  19  20  21  22  23  24  '
+;s3byt2	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+;	'  XLT     -0- -0- -0- -0- -0- -0- -0- -0- -0- MF  '
+;s3hex1	'  0000h   00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+;	'  DPB     CSV     ALV     DIRBCB  DTABCB  HASH    HBANK'
+;s3hex2	'  0000h   0000h   0000h   0000h   0000h   0000h   00h '
+
+	ld	hl,s3byt1
+	ld	(posn),hl
+
+	ld	hl,dph3
+	ld	b,12
+	call	hexbyt
+
+	push	hl
+	ld	hl,s3byt2
+	ld	(posn),hl
+	pop	hl
+
+	ld	b,13
+	call	hexbyt
+
+	ld	hl,s3hex1
+	ld	(posn),hl
+
+	ld	hl,dph3
+	ld	de,h3type
+	ld	b,12
+	call	hextbl
+
+
+	push	hl
+	ld	hl,s3hex2
+	ld	(posn),hl
+	pop	hl
+
+	ld	b,13
+	call	hextbl
+
+	ret
+
+
+	dseg
+h3type:	db	2,1,1,1,1,1,1,1,1,1,1
+	db	2,2,2,2,2,2,1
+	cseg
+
+
+;------;
+makedph2:	; menu 1 option 2    Display DPH statistics
+;------;
+
+;	'   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  '
+;s2byt	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+;	'  XLT     -0- -0- -0- -0- -0- -0- DIRBCB  DPB     CSV     ALV     '
+;s2hex	'  0000h   00h 00h 00h 00h 00h 00h 0000h   0000h   0000h   0000h   '
+
+	ld	hl,s2byt
+	ld	(posn),hl
+
+	ld	hl,dph2
+	ld	b,16
+	call	hexbyt
+
+	ld	hl,s2hex
+	ld	(posn),hl
+
+	ld	hl,dph2
+	ld	de,h2type
+	ld	b,16
+	call	hextbl
+
+	ret
+
+
+	dseg
+h2type:	db	2,1,1,1,1,1,1,2,2,2,2	; 11 fields
+	cseg
+
+
+	ret
+
+;------;
+showhdr:	; menu 1 option 2    Display DPH statistics
+;------;
+
+	ld	a,(vers.rel)
+	cp	31h
+	call	z,outdph3
+
+	ld	a,(vers.rel)
+	cp	22h
+	call	z,outdph2
+
+	ret
+
+;------;
+outdph3:	; menu 1 option 2    Display DPH statistics
+;------;
+
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(sh3dsk),a
+
+	call	makedph3
+
+	ld	de,sh3msg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	call	waitcr
+
+	ret
+
+
+	dseg
+sh3msg:	db	cr,'                     DRIVE '
+sh3dsk:	db	'A: DISK PARAMETER HEADER'
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'   0   1   2   3   4   5   6   7   8   9  10  11  '
+	db	cr,lf,'DPH(HEX):'
+s3byt1:	db	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'  12  13  14  15  16  17  18  19  20  21  22  23  24  '
+	db	cr,lf,'DPH(HEX):'
+s3byt2:	db	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'  XLT     -0- -0- -0- -0- -0- -0- -0- -0- -0- MF  '
+	db	cr,lf,'DPH(HEX):'
+s3hex1:	db	'  0000h   00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'  DPB     CSV     ALV     DIRBCB  DTABCB  HASH    HBANK'
+	db	cr,lf,'DPH(HEX):'
+s3hex2:	db	'  0000h   0000h   0000h   0000h   0000h   0000h   00h '
+	db	cr,lf
+	db	lf,lf,lf,lf,lf,lf,lf,lf
+	db	'$'
+
+	cseg
+
+;------;
+outdph2:	; menu 1 option 2    Display DPH statistics
+;------;
+
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(sh2dsk),a
+
+	call	makedph2
+
+	ld	de,sh2msg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	call	waitcr
+
+	ret
+
+
+	dseg
+sh2msg:	db	cr,'                     DRIVE '
+sh2dsk:	db	'A: DISK PARAMETER HEADER'
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  '
+	db	cr,lf,'DPH(HEX):'
+s2byt:	db	'  00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h 00h '
+	db	cr,lf
+	db	cr,lf,'         '
+	db	'  XLT     -0- -0- -0- -0- -0- -0- DIRBCB  DPB     CSV     ALV     '
+	db	cr,lf,'DPH(HEX):'
+s2hex:	db	'  0000h   00h 00h 00h 00h 00h 00h 0000h   0000h   0000h   0000h   '
+	db	cr,lf,lf,lf,lf,lf,lf,lf
+	db	lf,lf,lf,lf,lf,lf,lf,lf
+	db	'$'
+
+	cseg
+
+	page
+
+; -------------------------------------------- ;
+; utilities used in allocation vector analysis ;
+; -------------------------------------------- ;
+
+	dseg
+lenalv:	ds	2	; length of allocation vector in bytes
+alvdir:	ds	2	; datablocks allocated to directory
+alvdat:	ds	2	; datablocks allocated to data
+alvzro:	ds	2	; datablocks not allocated
+alvera:	ds	2	; datablocks allocated to erased data
+alvlst:	ds	2	; datablocks allocated to overwritten data
+alvbad:	ds	2	; datablocks with duplicated data access
+alvrng:	ds	2	; datablocks outside maximum number
+alvlen	equ	$-lenalv
+user:	db	0	; save user number
+	cseg
+
+;--;
+alv:		; return <HL> = <HL>/8, & <C> = <HL> mod 7
+;--;
+	ld	c,0
+	call	alv1		; /2
+	call	alv1		; /4
+	call	alv1		; /8
+	ld	a,c
+	rlca
+	rlca
+	rlca
+	ld	c,a
+	ret
+
+alv1:	ld	a,h
+	and	a
+	rra
+	ld	h,a
+	ld	a,l
+	rra
+	ld	l,a		; <HL> = <HL> / 2
+	ld	a,c
+	rra
+	ld	c,a		; C contains lost bits
+	ret
+
+tstbit:			; tst bit number <C> at offset <HL> from ALLOC
+			; return CF=NZ if bit already set
+
+	push	bc
+	push	hl
+	ld	hl,bitmap
+	ld	b,0
+	add	hl,bc
+	ld	a,(hl)	; bit to set
+	ld	bc,alloc
+	pop	hl
+	push	hl
+	add	hl,bc
+	ld	b,a	; save bit to set
+	ld	a,(hl)
+	and	b	; test if bit set
+	pop	hl
+	pop	bc
+	ret		; 0 = if not set, > 0 if set
+
+setbit:			; set bit number <C> at offset <HL> from ALLOC
+			; return CF=NZ if bit already set
+
+	push	bc
+	push	hl
+	ld	hl,bitmap
+	ld	b,0
+	add	hl,bc
+	ld	a,(hl)	; bit to set
+	ld	bc,alloc
+	pop	hl
+	push	hl
+	add	hl,bc
+	ld	b,a	; save bit to set
+	ld	a,(hl)
+	ld	c,a	; save byte before setting bit
+	or	b
+	ld	(hl),a	; set bit
+	ld	a,c
+	and	b	; test if bit set
+	pop	hl
+	pop	bc
+	ret		; 0 = if not set, > 0 if set
+
+
+
+bitmap:	db	10000000b	;0
+	db	01000000b	;1
+	db	00100000b	;2
+	db	00010000b	;3
+	db	00001000b	;4
+	db	00000100b	;5
+	db	00000010b	;6
+	db	00000001b	;7
+
+updat:
+	jp	nz,errbit	; bit already set
+	push	hl
+	ld	hl,(alvdat)
+	inc	hl
+	ld	(alvdat),hl	; increment count of data
+	pop	hl
+	ret
+
+
+errbit:			; flag bit already set
+	push	hl
+	ld	hl,(alvbad)
+	inc	hl
+	ld	(alvbad),hl	; increment count of duplicate data
+	pop	hl
+	ret
+
+upera:
+	jp	nz,lstbit	; bit already set
+	push	hl
+	ld	hl,(alvera)
+	inc	hl
+	ld	(alvera),hl	; increment count of erased data
+	pop	hl
+	ret
+
+lstbit:
+	push	hl
+	ld	hl,(alvlst)
+	inc	hl
+	ld	(alvlst),hl	; increment count of overwritten data
+	pop	hl
+	ret
+
+uprng:
+	push	hl
+	ld	hl,(alvrng)
+	inc	hl
+	ld	(alvrng),hl	; increment count of blocks outside range
+	pop	hl
+	ret
+
+;------;
+showalv:	; menu 1 option 3    Display disk ALLOCATION
+;------;
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(saldsk),a
+
+	ld	hl,lenalv	; start of datablock counts
+	ld	d,h
+	ld	e,l
+	inc	de
+	ld	bc,alvlen-1	; length of datablock counts
+	ld	(hl),0
+	ldir			; and zero all
+
+	ld	hl,(dpb.dsm)	; number of data blocks less 1
+	call	alv		; return <HL> = <HL>/8, & <C> = <HL> mod 7
+
+	inc	hl
+	ld	(lenalv),hl	; length of ALV in bytes
+	ld	de,alloc	; start of ALV
+	add	hl,de		; end of ALV
+
+	ex	de,hl
+	ld	hl,(BDOS+1)	; base of BDOS
+	dec	hl
+	and	a
+	sbc	hl,de		; <HL> = top of TPA - top of ALLOC
+	jp	nc,alvok
+
+	ld	de,alverr
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	jp	waitcr		; wait for <RETURN> then return
+
+	dseg
+alverr:	db	cr,lf,'TPA too small for allocation vector','$'
+	cseg
+
+; ---------------------------- ;
+; initialise allocation vector ;
+; ---------------------------- ;
+
+alvok:	ld	hl,(lenalv)
+	ld	b,h
+	ld	c,l
+	ld	hl,alloc
+	ld	d,h
+	ld	e,l
+	inc	de
+	dec	bc
+	ld	(hl),0
+	ldir			; set allocation vector to 0
+
+	ld	hl,(dpb.al0)	; directory ALV0 and ALV1
+	ld	(alloc),hl	; and fill alloc bits with these
+
+; ----------------------- ;
+; count directory entries ;
+; ----------------------- ;
+
+	ld	b,16
+	ld	de,0
+cntalv:	add	hl,hl
+	jp	nc,nocnt
+	inc	de
+nocnt:	djnz	cntalv
+	ex	de,hl
+	ld	(alvdir),hl	; number of directory entries
+
+; -------------- ;
+; scan directory ;
+; -------------- ;
+
+	ld	de,deffcb
+	ld	a,'?'
+	ld	(de),a
+	ld	c,17		;BDOS: SEARCH FOR FIRST
+	call	bdos
+
+nextdir:
+	cp	-1
+	jp	z,doera
+	ld	l,a
+	ld	h,0
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	ld	de,defdma
+	add	hl,de
+	ld	a,(hl)
+	and	not 00011111b	; test for high bits set
+	jp	nz,nxtdcb
+
+	ld	de,16
+	add	hl,de
+	ex	de,hl		; <DE> -> first data block allocation
+	ld	hl,(dpb.dsm)
+	ld	a,h
+	or	a
+	jp	nz,wrdalv
+
+; test 16 file data block bytes
+	ld	b,16		; byte wide data blocks
+nxtdb:	push	hl
+	ld	a,(de)
+	or	a
+	jp	z,nuldb
+	cp	l		; check range
+	jp	z,updb
+	jp	nc,errdb
+updb:	ld	l,a
+	ld	h,0
+	call	alv		; return <HL> = <HL>/8, <C>=MOD(<HL>,7)
+	call	setbit		; returns CF=NZ if bit already set
+	call	updat
+	jp	nuldb
+errdb:	call	uprng		; data block outside range
+nuldb:	pop	hl		; recover DSM
+	inc	de		; increment to next data block allocation
+	djnz	nxtdb
+	jp	nxtdcb
+
+; test 8 file data block words
+wrdalv:
+	ex	de,hl		; move back to HL
+	ld	b,8
+nxtdw:	push	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,e
+	or	d
+	jp	z,nuldw
+	ld	hl,(dpb.dsm)
+	xor	a
+	sbc	hl,de
+	jp	c,errdw
+	ex	de,hl
+	call	alv		; return <HL> = <HL>/8, <C>=MOD(<HL>,7)
+	call	setbit		; returns CF=NZ if bit already set
+	call	updat
+	jp	nuldw
+errdw:	call	uprng		; data block outside range
+nuldw:	pop	hl		; recover data block pointer
+	inc	hl
+	inc	hl		; increment to next data block allocation
+	djnz	nxtdw
+	jp	nxtdcb
+
+nxtdcb:
+	ld	de,deffcb
+	xor	a
+	ld	(de),a		; set default drive
+	ld	c,18		;BDOS: SEARCH FOR NEXT
+	call	bdos
+	jp	nextdir
+
+; -------------- ;
+; scan era files ;
+; -------------- ;
+
+erabyt	equ	0e5h	; CP/M byte for erased file
+
+doera:
+
+	ld	e,-1	; to fetch user code
+	ld	c,32		; BDOS: SET/GET USER CODE
+	call	bdos
+	ld	(user),a	; save user number
+
+	ld	e,5		; set user = 5
+	ld	c,32		; BDOS: SET/GET USER CODE
+	call	bdos
+
+	ld	de,deffcb
+	ld	a,'?'
+	ld	(de),a
+	ld	c,17		;BDOS: SEARCH FOR FIRST
+	call	bdos
+
+
+nextera:
+	cp	-1
+	jp	z,erased
+	ld	l,a
+	ld	h,0
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	ld	de,defdma
+	add	hl,de
+	ld	a,(hl)
+	and	not 00011111b	; test for high bits set
+	jp	z,nxtera
+	ld	a,(hl)
+	cp	erabyt
+	jp	nz,nxtera
+
+	push	hl
+	ld	b,32
+tstera:	ld	a,(hl)
+	cp	erabyt
+	jp	nz,notera
+	inc	hl
+	djnz	tstera		;(doesnt change flags)
+notera:	pop	hl
+	jp	z,erased	; as all 0e5's must be at end
+
+	ld	de,16
+	add	hl,de
+	ex	de,hl		; <DE> -> first data block allocation
+	ld	hl,(dpb.dsm)
+	ld	a,h
+	or	a
+	jp	nz,wrdera
+
+; test 16 erased file data block bytes
+	ld	b,16
+nxtedb:	push	hl		; save DSM
+	ld	a,(de)
+	or	a
+	jp	z,nuledb
+	cp	l		; check range
+	jp	z,upedb
+	jp	nc,erredb
+upedb:	ld	l,a
+	ld	h,0
+	call	alv		; return <HL> = <HL>/8, <C>=MOD(<HL>,7)
+	call	setbit		; returns CF=NZ if bit already set
+	call	upera
+	jp	nuledb
+erredb:	call	uprng		; data block outside range
+nuledb:	pop	hl		; recover DSM
+	inc	de		; increment to next data block byte
+	djnz	nxtedb
+	jp	nxtera
+
+; test 8 erased file data block words
+wrdera:
+	ex	de,hl		; move back to HL
+	ld	b,8
+nxtedw:	push	hl
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,e
+	or	d
+	jp	z,nuledw
+	ld	hl,(dpb.dsm)
+	xor	a
+	sbc	hl,de
+	jp	c,erredw
+	ex	de,hl
+	call	alv		; return <HL> = <HL>/8, <C>=MOD(<HL>,7)
+	call	setbit		; returns CF=NZ if bit already set
+	call	upera
+	jp	nuledw
+erredw:	call	uprng		; data block outside range
+nuledw:	pop	hl		; recover data block pointer
+	inc	hl
+	inc	hl		; increment to next data block word
+	djnz	nxtedw
+
+nxtera:
+	ld	de,deffcb
+	ld	a,erabyt and 11100000b	; ignore water mark,
+	ld	(de),a		; (only works when user=5)
+	ld	c,18		;BDOS: SEARCH FOR NEXT
+	call	bdos
+	jp	nextera
+
+erased:				; reached end of file
+
+	ld	a,(user)	; recover user number
+	ld	e,a
+	ld	c,32		; BDOS: SET/GET USER CODE
+	call	bdos
+
+; --------------------------- ;
+; calculate unused datablocks ;
+; --------------------------- ;
+
+	ld	hl,(lenalv)
+	ld	b,h
+	ld	c,l
+	ld	hl,(dpb.dsm)
+	ld	de,alloc
+nxtcnt:	push	bc
+	ld	a,(de)
+	ld	b,8
+next8:	add	a,a
+	jp	nc,notalc
+	dec	hl		; reduce count by 1
+notalc:	djnz	next8
+	inc	de
+	pop	bc
+	dec	bc
+	ld	a,b
+	or	c
+	jp	nz,nxtcnt
+
+	inc	hl		; as started with dsm, not dsm+1
+	ld	(alvzro),hl
+
+; ---------------------- ;
+; fill text with results ;
+; ---------------------- ;
+
+	ld	hl,alv01
+	ld	(posn),hl
+	xor	a
+	ld	hl,(dpb.dsm)
+	ld	de,1
+	add	hl,de
+	adc	a,0
+	ld	c,0
+	call	megdec		; write total number of datablocks
+
+	ld	hl,alv02
+	ld	(posn),hl
+	ld	hl,(alvdir)	; datablocks allocated to directory
+	call	wrddec
+
+	ld	hl,alv03
+	ld	(posn),hl
+	ld	hl,(alvdat)	; datablocks allocated to data
+	call	wrddec
+
+	ld	hl,alv04
+	ld	(posn),hl
+	ld	hl,(alvera)	; datablocks allocated to erased data
+	call	wrddec
+
+	ld	hl,alv05
+	ld	(posn),hl
+	ld	hl,(alvlst)	; datablocks allocated to overwritten data
+	call	wrddec
+
+	ld	hl,alv06
+	ld	(posn),hl
+	ld	hl,(alvbad)	; datablocks with duplicated data access
+	call	wrddec
+
+	ld	hl,alv07
+	ld	(posn),hl
+	ld	hl,(alvzro)	; datablocks not allocated
+	call	wrddec
+
+	ld	hl,alv08
+	ld	(posn),hl
+	ld	hl,(alvdir)
+	xor	a
+	ld	c,a
+	ex	de,hl
+	ld	hl,(alvdat)
+	add	hl,de
+	adc	a,c
+	ex	de,hl
+	ld	hl,(alvera)
+	add	hl,de
+	adc	a,c
+	ex	de,hl
+	ld	hl,(alvzro)
+	add	hl,de
+	adc	a,c
+	ld	c,a
+	call	megdec
+
+	ld	hl,alv09
+	ld	(posn),hl
+	ld	hl,(alvrng)	; datablocks with duplicated data access
+	call	wrddec
+
+; ------------ ;
+; display text ;
+; ------------ ;
+
+	ld	de,salmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	jp	waitcr		; wait for <RETURN> then return
+
+	dseg
+salmsg:	db	cr,'                     DRIVE '
+saldsk:	db	'A: DISK ALLOCATION'
+	db	cr,lf
+	db	cr,lf,'                            DATA BLOCKS '
+	db	cr,lf
+	db	cr,lf,'       TOTAL (DRM+1)             '
+alv01:	db						' 65536 '
+	db	cr,lf
+	db	cr,lf,'       Directory                 '
+alv02:	db						'    16 '
+	db	cr,lf,'       Data                      '
+alv03:	db						' 65535 '
+	db	cr,lf,'       Erased and recoverable    '
+alv04:	db						' 65535 '
+	db	cr,lf,'       Unused                    '
+alv07:	db						' 65535 '
+	db	cr,lf,'                                 '
+	db						' ----- '
+	db	cr,lf,'                                 '
+alv08:	db						' 65536 '
+	db	cr,lf
+	db	cr,lf,'       Erased and reused         '
+alv05:	db						' 65535 '
+	db	cr,lf,'       Duplicated data           '
+alv06:	db						' 65535 '
+	db	cr,lf,'       Blocks outside range      '
+alv09:	db						' 65535 '
+	db	cr,lf,lf,lf,lf,lf,lf,lf
+	db	'$'
+	cseg
+
+;------;
+showfil:	; menu 1 option 4    Display file ALLOCATION
+;------;
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(sfldsk),a
+	ld	de,sflmsg
+	ld	c,9		;BDOS: PRINT STRING
+	jp	bdos		; & RETURN
+
+	dseg
+sflmsg:	db	cr,'                     DRIVE '
+sfldsk:	db	'A: FILE ALLOCATION'
+	db	lf
+	db	cr,lf,lf,lf,lf,lf,'$'		; 10 line feeds
+	cseg
+
+;------;
+showdir:	; menu 1 option 5    Display directory ALLOCATION 
+;------;
+	ld	a,(def.dsk)
+	add	a,'A'
+	ld	(sdrdsk),a
+	ld	de,sdrmsg
+	ld	c,9		;BDOS: PRINT STRING
+	jp	bdos		; & RETURN
+
+	dseg
+sdrmsg:	db	cr,'                     DRIVE '
+sdrdsk:	db	'A: DIRECTORY ALLOCATION'
+	db	lf
+	db	cr,lf,lf,lf,lf,lf,'$'		; 10 line feeds
+	cseg
+
+	page
+
+;-----;
+select:		; menu 1 option 9    Select new disk
+;-----;
+
+	ld	a,(def.dsk)
+	ld	(olddsk),a	; save in case of error
+
+	ld	de,sldmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+; ---------------------- ;
+; Request new drive name ;
+; ---------------------- ;
+
+sel0:
+	ld	de,logmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	ld	de,selbuff
+	ld	c,10		;BDOS: DIRECT CONSOLE BUFFER
+	call	bdos
+	ld	a,(sellen)
+	or	a
+	ret	z		; nothing selected
+	cp	1
+	jp	z,sel1
+	cp	2
+	jp	nz,sel0
+	ld	a,(seldb2)
+	cp	':'
+	jp	nz,sel0
+sel1:	ld	a,(seldb1)
+	cp	'a'
+	jp	c,sel2
+	cp	'z'+1
+	jp	nc,sel0
+	add	a,'A'-'a'	; convert to lower case
+sel2:	sub	'A'
+	cp	15+1
+	jp	nc,sel0		; outside range 0-15
+	
+	ld	(def.dsk),a	; Current selected disk
+
+	ld	c,13		;BDOS: RESET DISK SYSTEM
+	call	bdos
+
+	ld	a,(def.dsk)
+	ld	e,a
+	ld	c,14		;BDOS: SELECT DISK
+	call	bdos
+	or	a
+	jp	nz,selerr
+
+	call	fetchdp		; fetch dpb and dph for drive
+
+	ret
+
+selerr:	ld	a,(olddsk)	; recover previously selecte disk
+	ld	(def.dsk),a
+	ld	e,a
+	ld	c,14		;BDOS: SELECT DISK
+	call	bdos
+	or	a
+	jp	nz,badsel
+
+	call	fetchdp		; fetch dpb and dph for drive
+
+	ld	de,oldmsg
+	ld	c,9		;BDOS: PRINT STRING
+	call	bdos
+
+	call	waitcr
+
+	ret
+
+	dseg
+
+sldmsg:	db	cr,lf,lf,lf,lf,lf	; 5 line feeds
+	db	cr,lf,lf,lf,lf,lf	; 5 line feeds
+	db	cr,lf,lf,lf,lf,lf	; 5 line feeds
+	db	cr,lf,lf,lf,lf,lf	; 5 line feeds
+	db	cr,'                     SELECT NEW DISK'
+	db	lf
+	db	cr,lf,lf,lf,lf,lf,'$'	; 5 line feeds
+
+olddsk:	db	0
+
+logmsg:	db	cr,'Enter drive name (A:, B:, etc ) ?    ',bs,bs,bs,'$'
+selbuff:
+	db	3
+sellen:
+	ds	1
+seldb1:	ds	1
+seldb2:	ds	2
+
+oldmsg:	db	cr,lf,'--- Unable to select new disk ---'
+	db	cr,lf,lf,lf,lf,lf,'$'	; 5 line feeds
+
+	cseg
+
+	page
+
+;-------;
+goodvers:
+;-------;
+
+	ld	a,(deffcb)
+	dec	a
+	cp	-1
+	jp	nz,useccp	; use ccp disk
+
+	ld	c,25		;BDOS: RETURN CURRENT DISK
+	call	bdos
+
+useccp:	ld	(def.dsk),a	; Current selected disk
+
+	ld	c,13		;BDOS: RESET DISK SYSTEM
+	call	bdos
+
+	ld	a,(def.dsk)
+	ld	e,a
+	ld	c,14		;BDOS: SELECT DISK
+	call	bdos
+	or	a
+	jp	nz,badsel
+
+	ld	(savesp),sp	; must use local stack as BIOS may be hungry
+	ld	sp,savesp
+
+	call	fetchdp		; fetch dpb and dph for drive
+
+	call	main		; now display as requested
+
+	ld	sp,(savesp)
+
+	ld	c,0		;BDOS: SYSTEM RESET
+	jp	bdos		; & exit
+
+;---;
+main:
+;---;
+
+	call	clearscrn	; clear screen
+	call	screen1		; display menu
+	call	option		; request option
+	cp	-1
+	ret	z
+
+	call	task1
+	jp	main
+
+;----;
+task1:
+;----;
+
+	ld	c,a
+	ld	b,0
+	dec	bc
+	ld	hl,table1
+	add	hl,bc
+	add	hl,bc
+	ld	a,(hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a
+	jp	(hl)
+
+table1:	dw	showblk	; menu 1 option 1    Display DPB statistics
+	dw	showhdr	; menu 1 option 2    Display DPH statistics
+	dw	showalv	; menu 1 option 3    Display disk ALLOCATION
+	dw	showfil	; menu 1 option 4    Display file ALLOCATION
+	dw	showdir	; menu 1 option 5    Display directory ALLOCATION 
+	dw	return
+	dw	return
+	dw	return
+	dw	select	; menu 1 option 9    Select new disk
+
+return:	ret
+
+	dseg
+alloc	equ	$		; allocation vector placed at end of program
+	end

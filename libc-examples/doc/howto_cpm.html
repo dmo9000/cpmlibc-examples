@@ -1,0 +1,427 @@
+<HTML>
+<HEAD>
+<TITLE>How to start with CP/M</TITLE>
+</HEAD>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<H1><center>How to start with CP/M</H1></center>
+ 
+<BODY>
+<p><b>This document copyright Herbert R. Johnson 2014 UPdated Dec 21 2014, patch June 6 2016.</b><BR>
+Contact and email information can be found <A href="/herbs_stuff/mailto.html">in this notice. </A> 
+
+<p>The Home page for all my Digital Research CP/M Web pages and information is <a href="http://www.retrotechnology.com/dri/">at this link.</a> The first CP/M systems and many others were S-100 bus based systems. To learn more about  S-100<A href="/herbs_stuff/s100.html">check my S-100 home page.</A><BR>
+
+
+<h2>Introduction</h2>
+
+<p>As of year 2004, Dr. Gary Kildall's operating system called CP/M was approaching 30 years old. I decided then to describe that history on my Web site, before it was lost. I worked on that through 2008; and updated my notes since. See my <a href="index.html">DRI home page</a> for links to Web pages about that event, and about about persons, companies and developments related to Digital Research and/or CP/M in the S-100 and microcomputer world of the 1970's.
+
+<p>This Web page provides some ideas about how to get and "run" CP/M today, or past alternatives to CP/M, in the 21st century. 
+
+<p>Contents of this Web page:<BR>
+<li><a href="#what">What is CP/M?</a>
+<li><a href="#how">How do I run CP/M on my computer?</a>
+<li><a href="#dunfield">Dave Dunfield's boot disk archives, Don Maslin's prior work</a>
+<li><a href="#tcpip">How do I run "the Internet" on my CP/M computer?</a>
+<li><a href="#hardware">Where do I get a CP/M computer?</a>
+<li><a href="#myown">How do I write my own version of CP/M for my own hardware or computer or emulator?</a>
+<li><a href="#books">What books tell me about CP/M?</a>
+<li><a href="#cpm86">CP/M 86</a>
+<li><a href="#point">Where can I get CP/M and its software?</a>
+<li><a href="#compress">How do I "decompress" and "unlibrary" CP/M files?</a>
+<li><a href="#read">How do I read old CP/M or old 8-inch diskettes?</b>
+<li><a href="#emu">CP/M emulators under MS-DOS, Windows, Linux</a>
+<li><a href="#alt">what are the alternative CP/M compatible OS's?</a>
+<li><a href="#unix">UNIX versus CP/M?</a>
+
+<p>Details CP/M history and Digital Research, are on my <a href="d_dri.html">Digital Research Web page.</a>
+
+
+<hr><hr>
+
+
+<h2><a name="what">What is CP/M?</h2>
+
+<p>CP/M was one of a series of operating systems offered by Digital Research Inc, in th 1970's and '80's. More information is on my <a href="d_dri.html">Digital Research Web page,</a> and other pages on my Web site. 
+
+<p>Early versions of CP/M consist of an operating system or OS; various tool programs for editing, assembling and debugging; and sample source code files. 
+CP/M's OS was divided into a BDOS, a CCP and a BIOS as separate programs. BDOS is the core of
+the operating system, responding to system calls from running programs.. The CCP is the 
+command-line processor with simple features like "dir", "type", and so forth.  BIOS is the custom I/O software for each computer model, which accepts calls from the BDOS to perform disk
+and console and printer hardware access. Programs would be called through the CCP, loaded in, and run by calling BDOS routines, some of which would call the BIOS to access specific hardware. When a program finished, it would call the BDOS to reload the CCP, or reboot to reload the CCP, BDOS and BIOS. The user could 
+then run another program. Later OS's from DRI had additional layers of software 
+and supported much more hardware and OS features: you'll have to read the docs 
+for specifics!
+
+<p>DRI's CP/M CCP and BDOS were distributed as binaries, assembled or compiled for the 8080 or 8086 processor. Also, the BIOS was specific to each computer 
+design, and often users would construct their own BIOS versions. A description of the process of 
+migrating CP/M is <a href="#how">in this section</a>. But the CCP and BDOS could be separated and replaced with alternatives, in effect a new OS. Many CP/M compatible OS's 
+were written specifically for Z80 based systems: they took advantage of Z80 instructions not 
+available offered by the 8080-only programs from DRI.
+
+<p>From time to time, someone asks some basic questions about CP/M like "what is standard CP/M?" or  "what are alternatives to CP/M?" or "what is good or bad about CP/M?". There is no simple answer to these questions. This Web page has some of the answers. Frankly, a Web search (or the links on this page) will lead to plenty of information. But only a few sites have listed all or even some of DRI OS's, or all the alternative OS's that have some kind of CP/M compatibility. And there is no "standard" for CP/M, just various versions of Digital Research operating systems, and various other OS's which offer some compatiblitiy to SOME of those versions. If you want to compare them, download the docs and software and go right ahead! a comparison without some context or specifics is meaningless.
+
+<h2><a name="how">How do I run CP/M on my computer?</h2>
+ 
+<p><b>People who want to run CP/M today have several options.</b> They can <a href="#hardware">run CP/M on 8080 and Z80 based hardware</a> (old systems or new). Or, they can run CP/M on an 8080 or Z80 emulator, typically on a older Windows/Intel PC. (A few work with CP/M-68K on 68000 based computers.) 8080/8085/Z80 computers of the 1970's and 80's can be found; <a href="hardware">check this part of my document about old and new CP/M computers.</a>
+
+<p>A popular option is to emulate CP/M-80 on their Windows or Linux system or Mac under an emulator. Do a Web search for "CP/M emulator Windows" or "...Linux" or "...Mac" for more information. I discuss <a href="#emu">CP/M emulators under MS-DOS, Windows, Linux</a> in this section.
+
+<p>The second option is to run CP/M "native" on an old computer which was originally sold with CP/M. If you don't have the CP/M disk for that computer, you have to FIND a CP/M specific to that hardware, or "port" CP/M to it yourself. Do a Web search using your computer's brand and model  and "CP/M" to see if anyone is running it, and contact them to see about getting a copy. <a href="#dunfield">Check Dave Dunfield's archive as discussed below</a>. Or post in Usenet newsgroup "comp.os.cpm" to request a CP/M boot disk for your specific computer. 
+
+<p>Another option is to take a generic or distributed CP/M and write the
+new code necessary to run it on your 8080, Z80, or 8086-compatible system. <a href="#myown">The notes below</a> discuss this option and what that means. (Of course, your computer has to have one of the processors listed. There is a CP/M 68000 but it's rarely used.) 
+
+<p><a href="#point"> I have some links here</a> to the sites I've mentioned here.  A page of Web pointers to sites related to CP/M is <a href="/herbs_stuff/s_point.html">my S-100 Web links page.</a> There are various archives of CP/M software, once distributed on CD-ROMS or
+as diskette libraries. <a href="/herbs_stuff/s_point.html#cdrom">I describe some of those
+archives on my S-100 Web links page.</a> 
+
+<h3><a name="dunfield">Dave Dunfield's boot disk archives, Don Maslin's prior work</h3>
+
+<p>In most cases, when someone requests "a copy of CP/M", they mean a boot disk for their old CP/M computer. CP/M requires a "BIOS" section which is tailored to specific hardware; it was designed to allow individuals to do so. One person who provided many CP/M boot disks in the 1990's was Don Maslin. As of 2003 there is a <a href="http://www.gaby.de/sysdisk.htm">on Gaby's CP/M Web site, a list of what were maslin's available system disks.</a>.
+Don Maslin passed away on Sept 10 2004.  There was discussion in comp.os.cpm through the end of 2005, but 
+No one was able to take over his work, or to obtain his physical archives, for many years. But in 2012, Al Kossow of bitsavers.org and the Computer History Museum, acquired and distributed a copy of two tape backups of Don Maslin's former computer. <a href="http://www.gaby.de/sysdisk.htm">Here's a Web page with a 200MB copy of Don Maslin's files, which include Teledisk images of many vintage system disks. </a>
+
+<p>Meanwhile, in 2005 or 2006, there were references in comp.os.cpm to <a href="http://www.classiccmp.org/dunfield/img/index.htm">
+Dave Dunfield's disk imaging Web site</a> for system boot disks, disk images, and for tools to create and manipulate them. In 2006 he moved much of that information to that "classiccmp" Web site from his own Web domain.
+
+<p>For several years, Dave had done a lot of work on CP/M and other DRI operating systems; working with or CREATING 8-bit system emulators; saving CP/M disk images as MS-DOS files and archiving them; and discussing how to upgrade old systems to use 3.5" floppy drives. Check his Web pages on the classiccmp site for all these activities. (There's also versions of Teledisk there, and I believe Dave's utilities can handle Teledisk images too.)
+
+<p>For most old CP/M systems, you will likely find someone with a bootable diskette, or obtain a disk image using the Dunfield tools and archives described on this Web page. I discuss the Catweasel floppy controller product, and a variety of issues about diskette formats, <a href="http://www.retrotechnology.com/herbs_stuff/s_drives_howto.html">on a technical Web page about diskette data recovery and copying.</a> 
+
+<P>Dunfield's IMageDisk 
+
+<p>As of August 2006 I counted about 75 different disk images there; including images for non-CP/M systems with 6800 and 68K processors. (by 2011 there were about 100 image files.) Here's what Dave had to say at in 2006, about his work and where to access it, from a public post in comp.os.cpm:
+
+<p><i>"... For backing up and restoring
+disks, as well as finding boot disks for known configurations, I urge
+people to check out the imaging tools and disk image archive on
+<a href="http://www.classiccmp.org/dunfield/img/index.htm">my [archive] site [now at classiccmp.org]</a>." 
+
+<p>"ImageDisk is a program that runs on a PC and can backup and
+restore complete [*.IMD files of disk] images of most soft-sector formats, including
+mixed density, odd sector numbering, differently formatter tracks
+etc. I have a page with details on how to connect 8" drives which
+work well in this configuration on a PC - this is my prime soft-sector
+disk manipulation tool."
+
+<p>"North Star Transfer (NST) is a program specifically for backing up
+and restoring NorthStar hard-sectored disks. It handles both single
+and double density formats and works with either controller (obviously
+it can't backup DD on the SD controller) - It uses a small client running
+under NorthStar DOS and a serial link to the PC."
+
+<p>"CPM Transfer (CPT) is a program which uses a small stub resident
+under CP/M to backup and restore complete disk images from most
+CP/M systems. There are other transfer utilities for other systems available on that
+page as well."
+
+<p>"I also have a growing collection of system disk images for various
+machines and configurations available on the same page. I'd like to ask
+that anyone with boot disks not already in the
+archive to please if you could, make images and send them to me for
+inclusion in the archive. What I am trying to do is to build a shareable
+and archivable resource of boot disks, and the means to recreate
+them so that classic treasures won't have to sit idle waiting for the
+right disk to come along...Regards, Dave"</i>
+
+<p>Don't contact ME, Herb Johnson, about this archive or program set. Go 
+to the <a href="http://www.classiccmp.org/dunfield/img/index.htm">classiccmp site for Dave Dunfield's work</a>.
+
+<p>By 2011, I found that <a href="http://bitsavers.org/bits/">Al Kossow's "bitsavers.org" archive of documents and software</a> also contains a substantial number of CP/M and other diskette image files. A Google search string ".IMD" for that site, yields 104 "hits", almost all to directories which contain multiple *.IMG files. Other disk images there include .TD0 (Teledisk format) and .IMG (not photos but disk bit images from versions of Catweasel).
+See my note above about Catweasel and other formats for details.
+
+<h2><a name="tcpip">How do I run "the Internet" on my CP/M computer?</h2>
+
+<p>A common question is "how do I run the Internet on CP/M?". Or, how do I network a CP/M machine, or "run the Web", etc. It ain't that easy. Mostly, CP/M systems lack the processor speed and memory, and the programs like browsers and email clients, and an Ethernet hardware interface, and the "TCP/IP" networking software....all that stuff. But, through the years, and even recently, some people have or are providing some of these capabilities. First and foremost, you need TCP/IP and utilities which run above them; and a physical connection to some kind of network or to a computer which has that connection to "the Internet". 
+
+<p><a href="cpm_tcpip.html">Check this Web page</a> for past work done by amateur radio with KA9Q, some recent work with modern Ethernet hardware and TCP/IP stacks, older work done on other computers, and discussions from comp.os.cpm. However, by year 2011 or so, most prior hardware and software work is moot: obtain a $50 microcontroller which supports both a serial port and Ethernet and a "TCP/IP stack" . Then "run" your CP/M system "on the Internet", whatever the hex that means. There's some clues in the referenced discussion. 
+
+<h2><a name="hardware">Where do I get a CP/M computer?</h2>
+
+<p><b>Running CP/M "native" on a computer</b>, means you need a computer with an 8080, 8085 or Z80 or compatible processor - to run CP/M-80 and other 8080 versions. Or, you can run CP/M-86 on an Intel-based PC - check the Web and elsewhere in this document about how to do that.
+
+<p><b>Used Z80-compatible computers</b> are still available, decades after they were first sold and built. They are available from individuals, for sale or give-away; they are bought and sold on eBay and other general auction Web sites; and some Web sites for specific old computers also offer hardware for sale. Check the Web, or personal for-sale Web sites, accordingly, there are too many venues to list. For example, the <a href="/herbs_stuff/s100.html">S-100 systems I support to this day</a>. If the computer you get does not have a CP/M diskette, <a href="#how">read elsewhere in this document about "How do I run CP/M on my computer?"</a>
+
+<p><b>New Z80-compatible computers</b> are generally not in commercial production, as of year 2009 forward. There are companies which produce computer "hobby kits" of various sorts, but few of them are 8085 or Z80 based, and most don't support any kind of file storage device. (But see my note below.) But there are private or "home brew" efforts which provide new CP/M-compatible computers in kit form, with CP/M and related software. <a href="http://n8vem-sbc.pbworks.com/">One project is the N8VEM Z80 Eurocard-bus computer.</a> Another is <a href="http://frotz.homeunix.org/p112/">Dave Griffith's Z180-based P112 single board computer.</a>. <a href="http://www.lesbird.com/sebhc">Les Bird of the Society of Eight-Bit Heathkit Computerists (SEBHC)</a> alerted me to his organization and <a href="http://groups.google.com/group/sebhc"> their Google group.</a> He's developed some <i>new Heath H8</i> cards, similar or better than the original cards. I try to keep current Web pointers for these and similar Web sites, on <a href="/herbs_stuff/s_point.html">my S-100 Web pointers page.</a> 
+
+<p><b>note:</b> In Nov 2012, I was informed that a <a href="http://www.kolter.de/euro-z80.html">Kolter, a German company, has a Z80 Eurocard "retro project"</a>. They also have a <a href="http://www.kolter.de/SEPIA_RIO.html">Z80-based industrial controller.</a> 
+
+<h2><a name="myown">How do I write my own version of CP/M for my own hardware or computer or emulator?</h2>
+
+<p>The CP/M OS consists of an operating system with a BIOS section; utility programs; a booting program; a FORMAT program. The CP/M operating system and utilities <b>have no hardware dependencies</b> other than the processor. CP/M will run on any system for which a BIOS is written and with the proper processor. The FORMAT, BIOS and BOOT <b>MUST</b> be written specifically to support specific hardware. 
+
+<p>The fundamentals of CP/M are described <a href="d_dri.html#what">on another Web page</a> on this Web site. A description of CP/M programs and features <a href="cpm_features.html"> is on this Web page.</a>
+
+<p>CP/M has a BIOS section which is specific to manufacturer's hardware, namely the console/text I/O ports and the floppy controller. There is also some software logic in BIOS that converts the expected arrangement of tracks and sectors into what is expected by the rest of the CP/M OS. That's another way of saying that there are a variety of ways CP/M sets up its boot tracks, the directory sectors, and the arrangment of data sectors on a track. The BIOS starts with a series of JUMP instructions to specific hardware tasks, performed by the BIOS. That "jump table" is standardized so that the CP/M OS knows what to expect.
+ 
+<p>Also, there are various CP/M BOOT methods. Most of them use the very first sector on the first track as boot code. The hardware is able to read that boot sector and execute its contents. Most boot sector code reads the rest of the "system" tracks, usually the first few tracks, which contains CP/M and the BIOS code, and then starts it up. Some systems have sufficient hardware to read the system tracks directly without a boot sector. (Consequently a strategy of just trying any old CP/M boot disk on an unknown system, probably will not be successful.
+
+<p>Smething has to load the "boot", and often that is a program in ROM called a "monitor", which runs when the computer is powered up. <a href="/restore/ROMmons.html">I have some versions of ROM monitors on my Web site</a>, most in my section on S-100 computers.
+
+<p>Finally, CP/M systems (usually) have a FORMAT program, to format diskettes from scratch. There are various methods to set up sectors which require various FORMAT programs. Some proprietary systems do not distribute their FORMAT programs. Also, there are some MS-DOS, Windows and Linux programs which will format diskettes in ways you can specify. So you may be able to format diskettes on a Windows or Linux system. "Format" does not put the CP/M OS on a diskette however, it just sets up the sectors and tracks in a way a particular CP/M system expects to see.
+ 
+<p>So how can an ordinary programmer or tech "create" a specific CP/M for a specific system? Well, CP/M is <i>designed</i> to be ported to a new architecture. The original DRI manuals with it tell you how to do this. The tools provided with it are sufficient to aid you in doing this. It is not impossible, just a challenge like many other challenges presented by older computers equipment. 
+
+<p>For an example of generating a CP/M system "from scratch", in Jan 2008 Rich Cini restored an IMSAI to operation and installed CP/M 2.2. While his system originally had an ancient (even by CP/M standards) iCOM floppy controller and FD 400 drives, he changed those to a Compupro Disk 1A controller and Teac FD-55GRF 5.25 inch  drives. Read <a href="/herbs_stuff/cpm_bootstrap.rtf">this document by Rich</a> for details about how he generated a new CP/M for that system. I also discussed his iCOM hardware and docs on <a href="/herbs_stuff/cini_icom.html"> this Web page.</a>
+
+<p>A number of people have provided me with source programs for a specific S-100 floppy controller. These include a complete CP/M BIOS and FORMAT program, with docs including the technical docs on that floppy disk controller. These are useful as an <b>example</b>.
+<a href="http://retrotechnology.com/herbs_stuff/s_sd.html"> Here's my Web page</a> for that controller and that code.</a>
+
+<p>Refer to other parts of this document to other Web sites which may have BIOS code or specific hardware code. But notible among them, is <a href="http://www.speakeasy.org/~rzh/bb.html">Rodger Hascoms's BIOS collection Web page.</a> He has BIOS code from several systems available there, as well as some tools like assemblers, and also FORMAT programs.
+
+<h3><a name="books">What books tell me about CP/M?</h3>
+
+<p>Many books were written about how to use CP/M, and how to create or modify a CP/M yourself for some computer. This section has a sampling of suggested book titles, by members of comp.os.cpm. Check your local public or campus library, or Web booksellers and auction sites, for these and other books. <b>Or ask me, I have some on hand too.</b> Also, some Web archive sites have PDF scanned copies of these books, no comment about "copyright".
+
+<p>Udo Munk says: <a href="http://maben.homeip.net:8217/static//S100/software/DRI/CPM/02%20The%20CPM%20handbook%20with%20MPM.PDF">A pretty good one available online [is at this link]:</a> Jan 2009, Amazon lists 20 copies available for under $6 plus $4 postage in the USA.
+
+<p>The CP/M Handbook with MP/M<BR>
+By Rodnay Zaks<BR>
+Published by SYBEX, 1980<BR>
+ISBN 0895880482, 9780895880482
+
+<p>Allison Parent says "One of the best was Andy Johnson-Lairds The Programmer CP/M handbook.
+published by Osborn-McGraw-Hill." Hersch agrees. 
+
+<p>Jack Crenshaw: "Yep, I agree. I think it was Johnson-Laird, Miller, and Barbier that I used most often. My favorite author was Ken Barbier. I also saw Alan Miller, Andy Johnson-Laird, David Cortesi, and Mitchell Waite." Regarding assembly language programming, since he mentioned the Z-80
+CPU, the "standard" book was "Programming the Z80" by Rodney Zaks.
+
+<p>Emmanuel Roche, France, said in previous discussions in comp.os.cpm:
+
+<p><pre>"Z80 Assembly Language Programming" - Lance A. Leventhal
+"Z80 Assembly Language Subroutines" - Lance A. Leventhal 
+Rodney Zaks' "The Programmer's CP/M Handbook" 
+"Programming the Z80" by Rodney Zaks
+"The Programmer's CP/M Handbook", (c) 1983 Andy Johnson-Laird Inc. 
+"Inside CP/M" by David E. Cortesi
+"Osborne CP/M User Guide" by Thom Hogan 
+Soul of CP/M by Mitchell Waite and Robert Lafore
+CP/M Bible by Mitchell Waite and John Angermeyer </pre>
+
+<P>Mentioned on <a href="http://members.tripod.com/net2000plus/test.htm">prominant Web sites:</a> "CP/M Bible" as above; 
+"CP/M and the Personal Computer", Dwyer and Critchfield
+
+<p>David Cortesi recently put some of his work on the Web. <A href="http://www.tassos-oak.com">Look for "A CP/M Programmer's Notebook" and "Dr. Dobbs Z80 Toolbook" links on his website</a> where he offers some more recent books. 
+
+<a name="cpm86"><h3>CP/M 86</h3>
+
+<p>CP/M 86, like CP/M 80, is available for free download for personal use. The "unofficial CP/M" site that has it will have copies of the manuals, the executables, and some source code. It and other sites have basic BIOS source code, or BIOSes for other CP/M systems. Other Web sites and other sources may have other CP/M's or other information which may help you in making over YOUR CP/M for YOUR system. To use CP/M to make a new CP/M, you can run CP/M 86 on most old and many recent Pentium/Windows systems by creating a bootable disk and booting it up; or you can run a CP/M 86 or CP/M 80 emulator which runs in the MS-DOS "box" under Windows; or run similar emulators under Linux.
+
+<p>For information on creating a bootable CP/M 86 disk for an old or recent  
+ Pentium/Windows system, I suggest you search newsgroup comp.os.cpm for recent discussions of just that. That question comes up a couple of times a year. One discussion was in March 2006 named "Ready to setup CP/M 86". Sites mentioned in such 
+discussions include the "unofficial" site above and 
+<a href="http://www.nostalgia8.nl/mirrors/cpm86/patch.htm"> this CP/M site for patching CP/M 86 to run on "IBM compatibles"</a>. 
+ 
+<h2><a name="point">Where can I get CP/M, its software, and manuals?</h2>
+ 
+<p>There are various Web links throughout this Web page and in my other DRI documents.
+ 
+<p>Of course you should check out the Usenet Newsgroup "comp.os.cpm". It is an old discussion group which has talked about CP/M for decades. Usenet 
+newsgroups can be accessed from services of your Internet Service Provider (ISP); via Google Groups (which includes an archive); and other Web sites.
+ 
+<p><a href="http://www.cpm.z80.de/">Gaby's "unofficial" CP/M Web site</a> is 
+licensed from the owners of DRI assets, DR-DOS Inc.. The site provides early CP/M files and docs for personal use, <a href="d_dri.html#gaby">as I described on another Web page.</a>  What's there? CP/M-80 in various versions, CP/M-86, CP/M 68K, CP/M 8000, CCP/M (concurrent CP/M), CP/net, and the early GSX extensions. Also, MP/M I, II, and MP/M-86; and Personal CP/M-86. Descriptions of these versions <a href="#os">are on this page.</a> The Web site <a href="http://forum.z80.de/index.php">also has a CP/M and hardware discussion forum (mostly in German).</a>
+
+<p><a href="#munk">Udo Munk's Z80PACK</a> Z80 emulator runs under Linux, follow the link for details. Udo has accumulated a number of working CP/M and related OS's, including sources and tools to assemble and compile them.
+
+<p><a href="http://www.seanet.com/~klaw/index.html"> The "CP/M-86 Software Repository", </a> was a popular site for the IBM-PC version. It has patches to run it on recent Windows/Intel type machines. But in July 2007, this site went away. An apparent copy of it may be found at:  <a href="http://www.e-tech.net/~pbetti/content/view/25/39/"> at P. Betti's mirror site</a> or <a href="http://www.nostalgia8.nl/mirrors/cpm86/index.html"> at katzy mirror site</a>
+
+<p>Gene Buckle's <a href="http://www.retroarchive.org/">retroarchive.org</a> has a lot of CP/M stuff, among other things.
+
+<p><a href="http://www.hanscom.us/">Roger Hanscom's Web site</a> has a section where he's collected a number of CBIOS sources. 
+
+<p>John Elliot's <a href="http://www.seasip.info/Cpm/index.html">extremely instructive early CP/M page.</a> There are: several articles about
+CP/M in the modern context; a lot of technical information about CP/M 1.X, 2.X and 3.X as well as CP/M 86 versions; file formats; and many Web links. Updated sometime up to 2005.
+ He has some recent (2007) work on GEM <a href="http://www.seasip.info/Gem/index.html"> at this page on his site.</a>
+
+<p>There's the <a href="http://www.cpm8680.com/">CP/M 86 and CP/M 80 Museum</a> Web site of Bill Buckels. He has a growing accumulation of software tools for CP/M, including Mix C, and links to sites with other tools and with CP/M information. It's noteworthy that he's asked former developers for permission to provide their CP/M products on his site.
+
+<p>Bill Buckels notes that <a href="http://tech.groups.yahoo.com/group/applecpm/">Willi Kusche is working in Apple CP/M with Turbo Pascal, on this Web site.</a>
+
+<p>A tribute site to Gary Kildall and to Digital Research Inc. and its employees and products, was constructed some time around year 2000 <a href="http://www.digitalresearch.biz/index.htm">Check digitalresearch.biz for some history and background about DRI, early CP/M, and what happened to some of the people and employees of DRI.</a> However, the site does not appear to have been updated since that time; information about Caldera and ownership of CP/M is obsolete, so verify any date-sensitive information you find there.
+
+
+<p><a href="/herbs_stuff/s_point.html">My S-100 Web links page</a> has descriptions of dozens of Web sites which have useful CP/M programs and products written to support CP/M.
+
+<h3><a name="compress">How do I "decompress" and "unlibrary" CP/M files?</h3>
+
+<p>Most archives and old diskettes with CP/M programs on them, will have files that appear to be corrupted or broken. The file name extensions will look odd: .lbr, .aqm, .cqm, .arc, .ark, etc. These files have been compacted with two kinds of programs. One kind takes several small files and puts them into one big file - "library" or "zipped" or "arc" and so on. The other kind compresses big files by removing bits - .zip, .arc, and so on. Also file extensions with a "q" as the second letter are "squeezed", the "unsqueezer" program restores the proper letter. Sometimes one has to try a number of programs, as there were some variations among the versions of these. "ZIP" standards appeared eventually, but that was late to the CP/M world.
+
+<P>There were various CP/M utilities to restore these files. Also, there were MS-DOS utility programs
+to do the same thing. The "Walnut Creek CP/M CD-ROM",
+archived on a number of CP/M archive Web sites, has a number of CP/M and MS-DOS utilities for decompressing the various compressed and libraried, etc. files one
+finds in CP/M (and MS-DOS) archives. The "oakland" CP/M and MS-DOS archive probably
+has a similar set of such programs. They are usually in a "utility"
+directory. I think there's some source code for these in older "C user's group" file archives. And, individuals still write or rewrite some of these utilities. 
+
+<p>The CP/M programs can be run with MS-DOS based CP/M emulators in the
+"DOS window" of most Windows systems. The MS-DOS programs (usually in
+a "MSDOS" directory) will run directly in the MS-DOS window. I presume
+Linux has both CP/M emulators and MS-DOS emulators. (If Vista or 7
+doesn't support the DOS window, find an older Windows system.)
+
+<p><a href="/herbs_stuff/s_point.html">My S-100 Web links page</a> has descriptions and links to Web sites which have some of these CP/M and MS-DOS archives, or to some programs for Windows and Linux. Search for "libary" or "compress" to find the links.
+
+<h3><a name="read">How do I read old CP/M or old 8-inch diskettes?</h3>
+
+<p>Often, people interested in CP/M today, used it in the past. They have old disks they want to read - from CP/M or other old systems - and they want to run old software or to recover old files. 
+<a href="/herbs_stuff/drive.html">Because I also support old floppy drives</a> as well as CP/M and S-100 systems, such people often contact me.
+
+<p>To be very very brief, in the 21st century there are many problems in reading old diskettes. If they are 3.5-inch or 5.25-inch diskettes, you may be able to obtain and use old MS-DOS based software to interpret their "format" and read them. In 2009, you'll likely have to find an older PC, with a 5.25-inch drive or which can accomodate such a drive. On this Web page, <a href="#dunfield">Dave Dunfield's boot disk image archives</a> includes tools and means to read old CP/M diskettes on old PC's with their native hardware. Those tools and more are <a href="/herbs_stuff/s_drives_howto.html#foreign">are discussed in a section of my Web page about floppy disk drives.</a>
+
+<p>For 8-inch drives, it's harder to connect them to modern computers, and you still have the "format" reading problem. There is no simple and straightforward way to connect 8-inch floppy drives to a modern PC or even an older PC. <a href="http://www.retrotechnology.com/herbs_stuff/s_drives_howto.html#PC">At the linked Web page, I discuss modern hardware that some technical people use with modern Windows/Linux PC's to operate 8-inch drives.</a>
+
+<p>Even if you can "connect" older drives to your PC, and obtain software to interpret old diskettes, those diskettes CAN be fragile and have mold on them - if you try to read them, the heads may 
+<a href="/herbs_stuff/clean_disks.html">scrape off the oxide and permanently destroy that data. We talk about that on this Web page.</a>
+
+<p>I generally don't offer to read or convert other people's disks. For many reasons, it's too much risk and too little gain for me (please don't argue with me about economics or "profit"). Frankly, people often find some guy/gal with an old old computer who will read it for almost "free". Or they say "it's too complicated and not worth the cost and effort". Or they find a professional data recovery service and pay them accordingly - it ain't cheap. I do not offer referrals to data recover services or individuals. 
+
+<p>You are welcome to contact me but PLEASE tell me as much information as possible about 1) how many disks of what size, 2) what computer and operating system and programs "wrote" the files, and 3) your city/country. If you don't tell me I will ask, and it's amazing how often I have to beg for this information. I may change my policies and services at any time.
+
+<p>I discuss these issues on several S-100 microcomuter support Web pages on my Web site. Links are below. 
+
+<p><a href="/herbs_stuff/s100faq.html">My S-100 FAQ has questions and answers about hooking up and using 8-inch drives to PC's.</a>. I have a <a href="/herbs_stuff/s_drives.html">technical Web page about floppy drives, floppy diskettes, and many kind of floppy controllers.</a>. I discuss 
+<a href="http://www.retrotechnology.com/herbs_stuff/s_drives_howto.html"> how to read old floppy diskettes on modern computers on this Web page</a>  One software product <a href="/herbs_stuff/sydex.html">to read old CP/M diskettes was provided by Sydex and called "Anadisk" and "22disk".</a>. 
+
+<p><a href="/herbs_stuff/s_point.html">This linked page consists of years of links to sites supporting S-100 and CP/M hardware and software.</a>
+
+<h3><a name="emu">CP/M emulators under MS-DOS, Windows, Linux</h3>
+
+<p>Some popular CP/M-80 emulators run under MS-DOS; you can run them in a "DOS box" in most versions of Windows. Others run under Windows directly, or Linux, or both. What they all do is read 8080 or Z80 instructions and execute them in a SIMULATED 8080 or Z80. They can run actual CP/M-80 programs at speeds faster than any Z80 today! Some of them emulate the CP/M operating system; some of them are set up to execute actual CP/M OS code as well, or some version or work-alike CP/M. 
+
+<p>Most of these emulators were written years or decades ago. But there has been a "revival" of some of them since the mid-millenium. I'll name a few below, but one way to find them is via the CP/M archive sites under "emulators", or a Web search. Also check the Usenet news group "comp.emulators.misc" for their frequent questions and any posts about specific emulators. Also check my list of  <a href="/herbs_stuff/s_point.html">S-100 Web links</a> for the latest notes about these. 
+Also look for SIMTEL archives, or Walnut Creek CP/M CD-ROM archives. 
+
+<p><a href="#dunfield">Dave Dunfield</a> continues to offer, through 2008, his own Z80 emulators and a growing archive of CP/M "boot disks" images. Follow the link for details.
+
+<p><a href="http://z80.info/z80emu.htm">Thomas Scherrer's Z80 site z80.info</a> has a section of Z80 emulators, and Z80 <b>system</b> emulators. Check the site for details. 
+
+<p><b>emulators</b>
+
+<p><b>MYZ80 by Siemon Cran</b> is a popular Z80 emulator under MS-DOS. Cran no longer supports it but it's available from many archives. 
+
+<p>The <a href="http://www.classiccmp.org/altair32">Altair32</a> is a Z80 and CP/M simulator for the MITS Altair which runs under Windows. Previously developed by Claus Giloi, for several years to 2013 it's been
+maintained by Rich Cini. Rich previously hosted his Altair32 site at <a href="http://www.altair32.com/">the Altair32 domain-name site</a> but Rich no longer has access to update that site's versions. 
+
+<p>The <a href="http://www.schorn.ch/altair.html">AltairZ80 SIMH emulator of Peter Schorn et al</a> also supports the MITS/Altair 8800 series with 8080 and Z80 processors, and other S-100 computers with "devices" for NorthStar, Vector Graphics, and Compupro; as well as the 8088 processor. It's based on the SIMH family of emulators for minicomputers and older mainframes. 
+
+<p>SIMH is also a general computer simulator for a variety of mainframe and minicomputers. SIMH in that context
+is supported by Bill Supnik et al, and appears to have a support site <a href="http://simh.trailing-edge.com/">on the trailing-edge.com Web site</a>. There's <a href="http://sourceforge.net/projects/simh/">a SIMH sourceforge site at this link.</a>
+
+<p>Also look at <b>YAZE-AG - Yet Another Z80 Emulator by AG (V 2.20)</b>. Again, <a href="http://www.mathematik.uni-ulm.de/users/ag/yaze-ag/">the Web site for YAZE-AG is at this link.</a> It runs under several modern OS's, and supports memory management to run paged memory CP/M's like CP/M 3.0.
+
+<p><b>Z80MU</b> from Computerwise Consulting Services in the 1990's, or from Joan Riff's "Z80MU PROFESSIONAL", is another old Z80 emulator under MS-DOS. Version 3.1 was a kind of "shareware" version, version 5.2 a kind
+of "try before buy" version. Look for "z80mu310.zip" or "z80mu52b.zip" in various CP/M archives. In early 2013, I attemped to contact the distributor of the "5.2 professional" version through a third party; I don't have a response from the developer as to their current interest. 
+
+<p>In 2008, someone suggested the <b>CP/M-86 emulator for MS-DOS "AME86"</b> would run under Windows XP (presumably in the DOS window). Source code is included for the emulator, which can be found at various Web archives (it's not under development currently). There may be some issues with Windows support for "FCB's" in recent versions of Windows.
+
+<p><a href="http://www.mess.org/">At the mess.org site, you can get MESS, an emulator for various old computers, including a lot of S-100 and CP/M type systems.</a> 
+
+<p><b>Linux</b>
+
+<p><a href="#munk">Udo Munk's Z80PACK</a> runs under Linux, follow the link for details. Also under Linux are a set of <b>disk tools called "cpmtools"</b>, available from such sources as <a href="http://www.moria.de/~michael/cpmtools/">the author Michale Haardt at moria.de</a> and <a href="http://www.cpm8680.com/cpmtools/">a Win32 version by John Elliot</a>, among other sites.  A popular set of Linux floppy disk utilities is "fdutils", which is described <a href="http://fdutils.linux.lu/">on this Web site</a>.(Thanks to Alexander Voropay for these suggestions.)
+
+<p>Linux has some means to manipulate disk images, I'm told. "Fortunately, Linux has a nice utility to change floppy disk parameters i.e.:<BR>
+$ setfdprm /dev/fd1 dd ssize=256 cyl=40 sect=16 head=2<BR>
+So, it is possible to create images of various floppy formats. " 
+
+<p><b>To run Linux on a Windows-based system,</b> search the Web for more info. Basically, you can either "dual boot" Linux or Windows; or you can run an EMULATOR program in Windows, like QEMU, under which you can run a Linux operating system. Or, <b>many Linux programs can be re-compiled under Cygwin</b>, a library which supports such a thing. Details are too complicated for me to discuss - a Web search will find more information. Or, you can find some old computer and install Linux on it.
+
+<h3><a name="munk">Udo Munk Z80PACK and CP/M OS archive</h3>
+
+<p> In Usenet newsgroup comp.os.cpm on Oct 2006 through April 2007, Udo Munk announced and discussed his updates to his classic Z80pack CP/M emulator for UNIX systems, as provided on his <a href="http://www.autometer.de/unix4fun/">unix4fun.org Web pages</a> He says the I/O is "well abstracted" and so any Z80 system can be emulated. It supports CP/M 2, CP/M 3, MP/M and CP/NET; and is written in ANSI C. Sources are included and the license is a BSD-style license. The CP/Net protocol runs under TCP/IP; Udo won't offer support to a Unix serial port driver, you need to use Telnet to connect two CP/NET "systems", real or emulated. In subsequent work, Udo migrated his emulator to Windows systems. 
+
+<p>Also on his site are a number of pre-packaged versions of CP/M, ISIS, PL/M and other CP/M-80 and Intel 8080 era software packages, with sources compiled through the Z80PACK toolchain. His site provides a WORKING archive of these 1970's software products for the 8080 and Z80. Udo's site is unique in providing both tools and archives of COMPLETE AND WORKING 8080 and Z80 systems software, ready for use.
+
+<p>Udo has gathered the Intel ISIS tools to run the native PL/M compiler (under an ISIS emulator), and gathered the various CP/M 2.2 and MP/M sources to compile and assemble them, and to run them under his emulator. He then did the same for CP/NET. By  January 2007 he obtained the available FORTRAN PL/M compiler from the CP/M archive, and complied the CP/M 1.4 sources with it, as well as the so-called "publicly released CP/M" PL/M code as discussed above. Udo reported both "compiled cleanly". (ISIS is discussed by me <a href="/restore/isis.html">on an ISIS Web page.</a>) 
+
+<p>Late in 2007, Udo announced he modified his code to run under Cygwin, a POSIX (Linux) application layer for Windows to run  Linux programs. SInce then, he's added other packages and other hardware emulations. Udo noted in 2009: "z80pack was not written to emulate CP/M systems, it was written to emulate any Z80 based system. An emulation of a CP/M system or the frontpanel based machines just are example implementations, that can be distributed
+and shared without legal issues." FOr more information on what is available under Z80PACK, check Udo's Web pages as linked above. 
+
+
+<a name="docs"><h3>DRI manuals and disks</h3>
+ 
+<p><a href="http://www.cpm.z80.de/">Gaby's "unofficial" CP/M Web site</a> is 
+licensed from the owners of DRI assets, DR-DOS Inc. The site provides early CP/M files and docs for personal use, <a href="d_dri.html#gaby">as I described on another Web page.</a> 
+
+<p><b>I have in my archives</b>, ORIGINAL DRI documents. They are listed on my DRI Web page on my S-100 Web site <a href="/herbs_stuff/d_dri.html">at this link</a>. Contact me to obtain copies via my manuals copy service. I also have 
+<A href="/herbs_stuff/d_morrow.html"> Morrow documentation including DRI's CP/M;</A> and <a href="/herbs_stuff/d_comp.html">Compupro documentation including DRI's CP/M.</a>
+
+<h2><a name="alt">what are the alternative CP/M compatible OS's?</h2>
+ 
+<p>There are, or were, CP/M compatible operating systems from other companies. They were "compatible" with specific versions of CP/M; or were alternatives to the BDOS or CCP of CP/M. To understand what that means, you must know a bit of CP/M terminology. I describe <a href="#what">CP/M internal parts above</a>. 
+
+<p>In the early days of CP/M, many computer companies produced their own version of CP/M. Early S-100 companies who did this include Cromemco, TDL, and so forth. Some of them obtained a licence from DRI (Cromemco), some eventually moved to DRI's CP/M (IMSAI). When time permits, I'll write more about these alternatives, but my 
+<a href="d_dri_history.html#release"> early DRI history Web page</a> discusses a few of these. 
+
+<p>Many CP/M compatible OS's were designed for Z80 based systems: they took advantage of Z80 instructions not available on the 8080 or later 8085. DRI's 8080-based
+programs and OS's did not use Z80-specific instructions. So, people used CP/M alternatives either for additional features, or speed due to Z80 support; or because they were offered by their computer's manufacturer.
+ 
+<p>Mentioned in Usenet newsgroup comp.os.cpm as CP/M alternatives are: P2DOS,
+ SUPRBDOS, Novados, ZRDOS, DOSplus, TurboDOS. Some of these may be
+ commercial products (like TurboDOS), some are free (ZRDOS). Some are BDOS replacements, so you need a CCP from CP/M, or they include a CCP such as ZCPR. Again, search the Web for discussions and documents and mentions of these and other products.
+ 
+<p><b>QPM:</b> A Web search suggests that QPM was sold by Emerald Software, a CP/M distributor of the 1980's, as an alternative to CP/M. In April 24 2006, the following was message posted in comp.os.cpm. <i>"Hi all. In a moment of great timing -- or irony -- I just read a posting about QP/M and wondering where it was at.  Wonder no more. As MICROCode Consulting has moved onto other turf, all of its Z-80 8-bit packages are available on-line -- free for personal use.  It
+ took me over 100 hours to convert everything into something usable on a modern system.  I sure *hope* it is worth it to somebody out there.
+ 
+<p>Visit <a href="http://www.microcodeconsulting.com/z80">[MicroCode Consulting's Legacy Z80 page]"</a>. Enjoy! -Mitch</i>[Mitchell Milner]
+ 
+<p>Microcode's "Legacy Z80" page provides QPM and other related Z80 products, free for personal use only. Tools include a linker and a debugger product; ROM BIOS's and ROM subsititutes for BigBoard and Kaypro; and support for the WD 1002 hard disk controller. (We sell docs for that controller <a href="http://retrotechnology.com/herbs_stuff/s_drives.html#DOCS">on this page</a>. There is discussion of the history of QPM versus ZCPR. MYZ80 in its "original" form is provided to emulate a Z80 under MS-DOS. 
+  
+<p>From John Elliot's page, <a href="http://www.seasip.info/Cpm/dosses.html"> is a list of alternative free "BDOSes" or CP/M compatible OS's</a>. Named and described
+ are Z80DOS, DOS+, P2DOS, NovaDOS, ZSDOS, ZPM3. Also listed are FreeDOS , an S-DOS alternative, and a version of DR-DOS.. 
+ 
+<p><a href="http://www.gaby.de/edownf.htm">Here is Gaby's site to download NZCOM and Z3Plus</a>, the "Z system" replacements for CP/M and CP/M-Plus, on Z80 systems. These were developed by Jay Sage in the 1980's as commercial products. He released them for general use via Gaby's CP/M Web site. Jay told me in Aug 2008: "I keep the messages generated when people download the software, and there have been close to a thousand messages over these two years [the Web page has existed]." 
+ 
+<p><a href="http://www.ibiblio.org/pub/packages/zcn/">This private site</a> offers "ZCN ... a free operating system for the Amstrad NC100 (Notepad) and NC200 (Notebook).  It's largely compatible with CP/M 2.2." - ZCN V1.3, June 2001
+ 
+<p><a href="http://mysite.verizon.net/hal.bower/">Hal Bower's ZsDOS and ZDDOS</a>, released under GPL. It was a popular replacment for CP/M on Z80 systems.
+ 
+<p>A thread in comp.os.cpm in late April 2006 discussed CP/M alternatives. One reply was
+ from Chuck Falconer,  about <a href="http://cbfalconer.home.att.net/download/cpm/">DOSPLUS and CCPLUS</a>, which are CP/M-80 replacements. "... I have similar biases for DOSPLUS 2.5, which the associated
+ CCPLUS.  I wrote these because I was highly dissatisfied with the
+ methods of configuring ZCPR, and the features available.  My system
+ is dynamically configurable, and does not require any reassemblies,
+ yet it fits in the exact space of the original BDOS/CCP, but
+ requires a Z80.  You can find out all about it with various
+ downloads from [link given above], which gives you full binaries, source, auxiliaries, etc.  It gives you most of the features of CP/M 3, and much better security." Chuck also has available a DDT replacement, compression utilities and a Pascal compiler. 
+
+<p><b>CP/M alternatives on non-Intel architectures</b>
+
+<p>CP/M was run on some non-Z80 and non-Intel systems by use of a slave processor. The classic implementation was to offer a Z80 card for the Apple II, with CP/M from DRI. Interestingly enough, Microsoft offered one of these! DRI did not offer CP/M on any processors but the 8080, 8086 and derivatives, the Motorola 68000; and I believe on the National 16000(?) series processor.
+
+<p>In late Jan 2008, Peter Dassow announced that he's going to provide on his Web site, a <b>6502 processor-based CP/M work-alike called "DOS-65"</b>, written and initially sold by Richard Leary. It's on <a href="http://www.z80.eu/dos65.html">Peter's DOS/65 Web page</a> and includes some source files, executables, and PDF'd manuals. A version of BASIC-E is also provided. Richard says these are offered from him as "shareware for non-profit, educational, or private use". The 6502 8-bit processor was developed by MOS Technologies and was used in the KIM, Apple II, the Commodore 64, and many other computers. 
+ 
+<h2><a name="unix">UNIX and Linux versus CP/M?</h2>
+
+<p>An occasional question about a Z80 system is <B>"can it run Unix (or Linux?)"</b>. Also, some people who <i>might</i> be interested in CP/M are more interested in Unix and Linux, or older and smaller versions of these OS's.   
+
+<p>Well, <b>Cromemco</b> created a Cromix which was a kind of Unix for their Z80 systems, which evolved into a System 7 Unix when they included a 68000 processor. <b>Morrow</b> developed an OS called Micronix which was based on System 7 Unix.
+
+<p>A more accessable "unix" for the Z80 was from Hal Bower and called UZI, a modification of System 7. The news in 2006 is that UZI was revised and runs on a current Z180 computer, the P112.  <a href="http://mysite.verizon.net/hal.bower/"> Hal's Web site has a page section for UZI for YASBEC & the "old" P112</a> and for the changes made by Hector Peraza to support the "new" P112 Z180 computer. The "new" P112, a single board Z180 from the 1990's available in 2006 as a kit, has a Web site <a href="http://frotz.homeunix.org/p112/"> at this link.</a> <a href="http://p112.sourceforge.net/index.php?home">Software for the P112, including an updated UZI180, is available at this linked Sourceforge Web site.</a>
+
+<p>another Web site for UZI is this <a href="http://uzix.sourceforge.net/index.php?page=links&lang=us">Sourceforge UZIX project</a> page. While the SourceForge project is for MS-DOS machines, there are links and references to USI, UZI180 (for the Z180), Minix and related efforts. But some links are dead in April 2008; the project does not look active after 2005. Look for UZI180 
+<a href="http://web.telia.com/~u88102825/software.htm">on this Web site for the P112.</a>
+The originator of UZI, Doug Brawn, is not working on UZI these days but still has 
+<a href="http://www.dougbraun.com/uzi.html">a Web page</a> where you can get what he did; or check various CP/M or Z80 archive sites.
+
+<p>Another Unix look-alike for the Z80, from the 1980's, is Morrow's "Micronix" operating system, a licenced version of System 6. 
+<a href="/herbs_stuff/mnix_micronix.html">HEre's my Web page about it.</a>
+
+ 
+<hr><hr>
+<p><b>Contact information:</b><br>
+ <ADDRESS>
+ Herb Johnson<BR>
+ New Jersey, USA<BR>
+ To email @ me, see <a href="/herbs_stuff/mailto.html">see my ordering Web page</a>
+ </ADDRESS>
+ 
+<p>
+ Copyright &copy; 2016 Herb Johnson<BR>
+ </P>
+ 
+ </BODY>
+ </HTML>

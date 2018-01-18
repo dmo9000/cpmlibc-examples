@@ -1,0 +1,476 @@
+#include <cprintf.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libc.h>
+#include "syslib/cpm_sysfunc.h"
+
+#define false   0
+#define true    1
+
+
+extern char DFS;
+#define ISN_LOAD    "LD"
+
+char output[64];
+
+extern bool has_helium;
+
+const char *RTT[16] = {
+               "B", "C", "D", "E", "H", "L", "(HL)", "A",
+               "B", "C", "D", "E", "H", "L", "(HL)", "A" 
+                };
+
+int debug(char *payload)
+{
+    unsigned int addr = 0;
+    int i = 0;
+    int lines = 0;
+    char *ptr = NULL;
+    bool disassemble = false;
+    char instruction = 0;
+    unsigned char *memptr = NULL;
+    char *insn_text = NULL;
+    int offset = 0;
+
+    cprintf("\n");
+
+    if (strncmp(payload, "0x", 2) == 0) {
+        addr = strtoul(payload, NULL, 16);
+    } else {
+        addr = strtoul(payload, NULL, 10);
+    }
+
+    //sprintf((char *) &output, "[%u][%u][%u]", 4, 5, 6);
+    //cprintf(">%s<\n",output);
+    //return 0;
+    //
+
+    disassemble = true;
+    while (disassemble && lines < 23) {
+        cprintf("0x%04x %c ", addr, DFS);
+        memptr = (unsigned char *) addr;
+        memset(&output, 0, 64);
+        switch(memptr[0]) {
+        case 0x00:
+            sprintf((char *) &output, "NOP");
+            offset = 1;
+            break;
+        case 0x01:
+            sprintf((char *) &output, "LD BC,0x%02X%02X", (char) memptr[1], (char) memptr[2]);
+            offset = 3;
+            break;
+        case 0x05:
+            sprintf((char *) &output, "DEC B");
+            offset = 1;
+            break;
+        case 0x06:
+            sprintf((char *) &output, "LD B,0x%02x", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0x0A:
+            sprintf((char *) &output, "LD A, (BC)");
+            offset = 1;
+            break;
+        case 0x0C:
+            sprintf((char *) &output, "INC C");
+            offset = 1;
+            break;
+        case 0x0E:
+            sprintf((char *) &output, "LD C,0x%02X", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0x10:
+            sprintf((char *) &output, "DJNZ (PC+0x%02X%02X)", (char) memptr[1], (char) memptr[2]);
+            offset = 3;
+            break;
+        case 0x11:
+            sprintf((char *) &output, "LD DE,0x%02X%02X", (char) memptr[1], (char) memptr[2]);
+            offset = 3;
+            break;
+        case 0x12:
+            sprintf((char *) &output, "LD (DE),A");
+            offset = 1;
+            break;
+        case 0x13:
+            sprintf((char *) &output, "INC DE");
+            offset = 1;
+            break;
+        case 0x14:
+            sprintf((char *) &output, "INC D");
+            offset = 1;
+            break;
+        case 0x15:
+            sprintf((char *) &output, "DEC D");
+            offset = 1;
+            break;
+        case 0x16:
+            sprintf((char *) &output, "LD D,0x%02x", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0x18:
+            sprintf((char *) &output, "JR (PC+0x%02X%02X)", (char) memptr[1], (char) memptr[2]);
+            offset = 3;
+            break;
+        case 0x19:
+            sprintf((char *) &output, "ADD HL,DE");
+            offset = 1;
+            break;
+        case 0x1A:
+            sprintf((char *) &output, "LD A, (DE)");
+            offset = 1;
+            break;
+        case 0x1C:
+            sprintf((char *) &output, "INC E");
+            offset = 1;
+            break;
+        case 0x20:
+            sprintf((char *) &output, "JR NZ, (PC+0x%02X%02X)", (char) memptr[1], (char) memptr[2]);
+            offset = 3;
+            break;
+        case 0x21:
+            sprintf((char *) &output, "LD HL,0x%02X%02X", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x22:
+            sprintf((char *) &output, "LD (%02X%02X), HL", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x23:
+            sprintf((char *) &output, "INC HL");
+            offset = 1;
+            break;
+        case 0x28:
+            sprintf((char *) &output, "JR Z, (PC+0x%02X%02X)", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x2A:
+            sprintf((char *) &output, "LD HL, (%02X%02X)", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x2E:
+            sprintf((char *) &output, "LD L, 0x%02X", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0x30:
+            sprintf((char *) &output, "JR NC, (PC+0x%02X%02X)", (char) memptr[2], (char) memptr[2]);
+            offset = 3;
+            break;
+        case 0x31:
+            sprintf((char *) &output, "LD SP,0x%02X%02X", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x32:
+            sprintf((char *) &output, "LD (%02X%02X), A", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x39:
+            sprintf((char *) &output, "ADD HL, SP");
+            offset = 1;
+            break;
+        case 0x3A:
+            sprintf((char *) &output, "LD A, (%02X%02X)", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0x3E:
+            sprintf((char *) &output, "LD A, 0x%02X", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0x42:
+            sprintf((char *) &output, "LD B, D");
+            offset = 1;
+            break;
+        case 0x44:
+            sprintf((char *) &output, "LD B, H");
+            offset = 1;
+            break;
+        case 0x46:
+            sprintf((char *) &output, "LD B, (HL)");
+            offset = 1;
+            break;
+        case 0x48:
+            sprintf((char *) &output, "LD C, B");
+            offset = 1;
+            break;
+        case 0x4A:
+            sprintf((char *) &output, "LD C, E");
+            offset = 1;
+            break;
+        case 0x4B:
+            sprintf((char *) &output, "LD C, E");
+            offset = 1;
+            break;
+        case 0x4D:
+            sprintf((char *) &output, "LD C, L");
+            offset = 1;
+            break;
+        case 0x4E:
+            sprintf((char *) &output, "LD C, (HL)");
+            offset = 1;
+            break;
+        case 0x52:
+            sprintf((char *) &output, "LD D, D");
+            offset = 1;
+            break;
+        case 0x56:
+            sprintf((char *) &output, "LD D, (HL)");
+            offset = 1;
+            break;
+        case 0x5E:
+            sprintf((char *) &output, "LD E, (HL)");
+            offset = 1;
+            break;
+        case 0x60:
+            sprintf((char *) &output, "LD H, B");
+            offset = 1;
+            break;
+        case 0x66:
+            sprintf((char *) &output, "LD H, (HL)");
+            offset = 1;
+            break;
+        case 0x69:
+            sprintf((char *) &output, "LD L, C");
+            offset = 1;
+            break;
+        case 0x6F:
+            sprintf((char *) &output, "LD L, A");
+            offset = 1;
+            break;
+        case 0x72:
+            sprintf((char *) &output, "LD (HL), D");
+            offset = 1;
+            break;
+        case 0x73:
+            sprintf((char *) &output, "LD (HL), E");
+            offset = 1;
+            break;
+        case 0x76:
+            sprintf((char *) &output, "HALT");
+            offset = 1;
+            break;
+        case 0x7A:
+            sprintf((char *) &output, "LD A, B");
+            offset = 1;
+            break;
+        case 0x79:
+            sprintf((char *) &output, "LD (HL), D");
+            offset = 1;
+            break;
+        case 0x78:
+            sprintf((char *) &output, "LD A, D");
+            offset = 1;
+            break;
+        case 0x7C:
+            sprintf((char *) &output, "LD A, H");
+            offset = 1;
+            break;
+        case 0x7D:
+            sprintf((char *) &output, "LD A, L");
+            offset = 1;
+            break;
+        case 0x7E:
+            sprintf((char *) &output, "LD A, (HL)");
+            offset = 1;
+            break;
+        case 0xAF:
+            sprintf((char *) &output, "XOR A");
+            offset = 1;
+            break;
+        case 0xB1:
+            sprintf((char *) &output, "OR C");
+            offset = 1;
+            break;
+        case 0xB4:
+            sprintf((char *) &output, "OR H");
+            offset = 1;
+            break;
+        case 0xB5:
+            sprintf((char *) &output, "OR L");
+            offset = 1;
+            break;
+        case 0xB7:
+            sprintf((char *) &output, "OR A");
+            offset = 1;
+            break;
+        case 0xC1:
+            sprintf((char *) &output, "POP BC");
+            offset = 1;
+            break;
+        case 0xC3:
+            sprintf((char *) &output, "JP 0x%02X%02X", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0xC5:
+            sprintf((char *) &output, "PUSH BC");
+            offset = 1;
+            break;
+        case 0xCA:
+            sprintf((char *) &output, "JP Z, 0x%02X%02X", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0xCD:
+            sprintf((char *) &output, "CALL 0x%02X%02X", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0xC9:
+            sprintf((char *) &output, "RET");
+            offset = 1;
+            disassemble = false;
+            break;
+        case 0xD1:
+            sprintf((char *) &output, "POP DE");
+            offset = 1;
+            break;
+        case 0xD3:
+            sprintf((char *) &output, "OUT 0x%02X, A", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0xD5:
+            sprintf((char *) &output, "PUSH DE");
+            offset = 1;
+            break;
+        case 0xDA:
+            sprintf((char *) &output, "JP C, (0x%02X%02X)", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0xDB:
+            sprintf((char *) &output, "IN 0x%02X, A", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0xDD:
+            /* DD prefixed opcode */
+            switch(memptr[1]) {
+            case 0x21:
+                sprintf((char *) &output, "LD IX, 0x%02X%02X", (char) memptr[2], (char) memptr[3]);
+                offset = 4;
+                break;
+            case 0x39:
+                sprintf((char *) &output, "ADD IX, SP");
+                offset = 2;
+                break;
+            case 0x66:
+                sprintf((char *) &output, "LD H, (IX+0x%02X)", (char) memptr[2]);
+                offset = 3;
+                break;
+            case 0x6E:
+                sprintf((char *) &output, "LD L, (IX+0x%02X)", (char) memptr[2]);
+                offset = 3;
+                break;
+            case 0xE1:
+                sprintf((char *) &output, "POP IX");
+                offset = 2;
+                break;
+            case 0xE5:
+                sprintf((char *) &output, "PUSH IX");
+                offset = 2;
+                break;
+            default:
+                sprintf((char *) &output, "??? -> [%02X%02X]", (char) memptr[0], (char) memptr[1]);
+                offset = 2;
+                disassemble = false;
+                break;
+            }
+            break;
+        case 0xE1:
+            sprintf((char *) &output, "POP HL ");
+            offset = 1;
+            break;
+        case 0xE3:
+            sprintf((char *) &output, "EX (SP),HL ");
+            offset = 1;
+            break;
+        case 0xE5:
+            sprintf((char *) &output, "PUSH HL");
+            offset = 1;
+            break;
+        case 0xED:
+            switch(memptr[1]) {
+                case 0x73:
+                sprintf((char *) &output, "LD (%02X%02X), SP", (char) memptr[2], (char) memptr[1]);
+                offset = 3;
+                break;
+                case 0x7B:
+                sprintf((char *) &output, "LD SP, (%02X%02X)", (char) memptr[2], (char) memptr[1]);
+                offset = 3;
+                break;
+            /* ED prefixed opcode */
+                default:
+                sprintf((char *) &output, "??? -> [%02X%02X]", (char) memptr[0], (char) memptr[1]);
+                offset = 2;
+                disassemble = false;
+                break;
+                }
+            break;
+        case 0xEF:
+            sprintf((char *) &output, "RST 28h");
+            offset = 1;
+            break;
+        case 0xF1:
+            sprintf((char *) &output, "POP AF");
+            offset = 1;
+            break;
+        case 0xF3:
+            sprintf((char *) &output, "DI");
+            offset = 1;
+            break;
+        case 0xF9:
+            sprintf((char *) &output, "LD SP, HL");
+            offset = 1;
+            break;
+        case 0xFA:
+            sprintf((char *) &output, "JP M,(%02X%02X)", (char) memptr[2], (char) memptr[1]);
+            offset = 3;
+            break;
+        case 0xFB:
+            sprintf((char *) &output, "EI");
+            offset = 1;
+            break;
+        case 0xFC:
+            sprintf((char *) &output, "CALL M,(%02X%02X)", (char) memptr[2], (char) memptr[1]);
+            offset = 1;
+            break;
+        case 0xFD:
+            /* FD prefixed opcode */
+            switch(memptr[1]) {
+                default:
+                sprintf((char *) &output, "??? -> [%02X%02X]", (char) memptr[0], (char) memptr[1]);
+                offset = 2;
+                disassemble = false;
+                break;
+                }
+            break;
+        case 0xFE:
+            sprintf((char *) &output, "CP %02x", (char) memptr[1]);
+            offset = 2;
+            break;
+        case 0xFF:
+            sprintf((char *) &output, "RST38H");
+            offset = 1;
+            break;
+        default:
+            sprintf((char *) &output, "??? -> [%02X]", (char) memptr[0]);
+            offset = 1;
+            disassemble = false;
+            break;
+        }
+
+        cprintf("%-17s %c ", output, DFS);
+        for (i = 0 ; i < offset; i++) {
+            printf("%02X", memptr[i]);
+        }
+        cprintf("\n");
+        addr += offset;
+        lines++;
+      if (lines >= 23) {
+            if (continue_or_exit()) {
+                lines = 0;
+                printf("\n");
+            }
+        }
+
+    }
+
+    cprintf("\n");
+
+    return 0;
+}
+

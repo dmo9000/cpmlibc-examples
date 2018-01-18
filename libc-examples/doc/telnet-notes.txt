@@ -1,0 +1,84 @@
+/* The Fedora Linux client (based on BSD telnet?) will send these at the time of opening a connection */
+
+/* we ask to supress GO AHEAD */
+
+SENT DO SUPPRESS GO AHEAD
+
+/*  we say we will do terminal discovery */
+
+SENT WILL TERMINAL TYPE
+
+/* we will provide window size info */
+
+SENT WILL NAWS
+
+/* will provide terminal speed info */
+
+SENT WILL TSPEED
+
+/* will provide lflow */
+
+SENT WILL LFLOW
+
+/* we will linemode (see below ; the server tells us not to) */
+
+SENT WILL LINEMODE
+
+/* not sure what this enables */
+
+SENT WILL NEW-ENVIRON
+
+/* tells remote end to provide status */
+
+SENT DO STATUS
+
+/* we will do XDISPLOC *.
+
+SENT WILL XDISPLOC
+
+
+/* the standard telnetd responsds with these */
+
+RCVD DO TERMINAL TYPE
+RCVD DO TSPEED
+RCVD DO XDISPLOC
+RCVD DO NEW-ENVIRON
+RCVD WILL SUPPRESS GO AHEAD
+RCVD DO NAWS
+
+/* once asked to do NAWS, we responsd with our terminal dimensions, which are fixed at 80x24 for now */
+
+SENT IAC SB NAWS 0 178 (178) 0 44 (44)
+
+/* don't know what LFLOW is, but the server asks us not to LINEMODE */
+
+RCVD DO LFLOW
+RCVD DONT LINEMODE
+RCVD WILL STATUS
+
+/* terminal speed negotiation, interesting */
+
+RCVD IAC SB TERMINAL-SPEED SEND
+SENT IAC SB TERMINAL-SPEED IS 38400,38400
+
+/* X display variable */
+
+RCVD IAC SB X-DISPLAY-LOCATION SEND
+SENT IAC SB X-DISPLAY-LOCATION IS "fc25:0"
+
+/* oh so we can set environment variables remotely? neat */
+
+RCVD IAC SB NEW-ENVIRON SEND 
+SENT IAC SB NEW-ENVIRON IS VAR "DISPLAY" VALUE "fc25:0"
+
+/* we send our Terminal type - we will use ANSI */
+
+RCVD IAC SB TERMINAL-TYPE SEND
+SENT IAC SB TERMINAL-TYPE IS "XTERM-256COLOR"
+
+/* we are asked to echo, but we refuse, so the server says it will echo and we confirm this */
+
+RCVD DO ECHO
+SENT WONT ECHO
+RCVD WILL ECHO
+SENT DO ECHO

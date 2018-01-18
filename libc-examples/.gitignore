@@ -1,0 +1,69 @@
+# Node crap
+#
+bbs/server/node_modules
+bbs/client/testdata.bin
+
+# Object files
+*.o
+*.ko
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# disk images
+oem*.arc
+diskbuild/Drive9.disk
+diskbuild/drive9/
+diskbuild/build.log
+
+# 
+src/*/*.asm
+src/*/*.rel
+src/*/*.lst
+src/*/*.sym
+bin/*.asm
+bin/*.rel
+bin/*.lst
+bin/*.sym
+bin/*.arf
+bin/*.noi
+bin/*.map
+bin/*.ihx
+bin/*.com
+pngrip/*2.png
+pngrip/*.rip
+pngrip/pngtest
+
+fonts/8x8/*.pf.png
+src/telnet/ztelnet
+
+
+libs/liblzf-3.6-orig/*.ihx
+libs/liblzf-3.6-orig/*.map
+libs/liblzf-3.6-orig/*.noi
+libs/liblzf-3.6-orig/*.asm
+libs/liblzf-3.6-orig/*.lst
+libs/liblzf-3.6-orig/*.rel
+libs/liblzf-3.6-orig/*.sym
+libs/liblzf-3.6-orig/bin
+libs/liblzf-3.6-orig/lzf.arf
+
+testdata/testfile.bin
+
+libc/*.asm
+libc/*.lst
+libc/*.rel
+libc/*.sym
+libc/*.arf

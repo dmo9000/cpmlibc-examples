@@ -1,0 +1,1 @@
+sdcc -mz80 -DPORTABLE_BOGOMIPS -c bogomips.c -o bogomips

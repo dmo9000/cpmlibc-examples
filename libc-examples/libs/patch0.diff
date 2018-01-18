@@ -1,0 +1,34 @@
+diff -urN liblzf-3.6.orig/config.h.z80 liblzf-3.6/config.h.z80
+--- liblzf-3.6.orig/config.h.z80	1970-01-01 10:00:00.000000000 +1000
++++ liblzf-3.6/config.h.z80	2017-11-03 09:58:54.493199937 +1100
+@@ -0,0 +1,17 @@
++/* config.h.  Generated from config.h.in by configure.  */
++/* config.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
++
++/* Define to empty if the keyword does not work.  */
++/* #undef const */
++
++/* Define if you have the ANSI C header files.  */
++#define STDC_HEADERS 1
++
++/* The number of bytes in a int.  */
++#define SIZEOF_INT 4
++
++/* The number of bytes in a long.  */
++#define SIZEOF_LONG 8
++
++/* The number of bytes in a short.  */
++#define SIZEOF_SHORT 2
+diff -urN liblzf-3.6.orig/lzf.c liblzf-3.6/lzf.c
+--- liblzf-3.6.orig/lzf.c	2007-11-30 21:31:46.000000000 +1100
++++ liblzf-3.6/lzf.c	2017-11-03 09:54:52.698906207 +1100
+@@ -46,6 +46,9 @@
+ #include <limits.h>
+ #include "lzf.h"
+ 
++#define fprintf(a,...)		printf(__VA_ARGS__)
++#define perror(a)					printf("%s", strerror(errno))
++
+ #ifdef HAVE_GETOPT_H
+ # include <getopt.h>
+ #endif

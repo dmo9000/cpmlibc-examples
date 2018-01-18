@@ -1,0 +1,7 @@
+-mjwx
+-i osz/bios.ihx
+-b _CODE = 0x0000
+-b _DATA = 0x0090
+osz/isr0.rel
+
+-e

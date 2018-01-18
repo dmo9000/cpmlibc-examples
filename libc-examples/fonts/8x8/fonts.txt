@@ -1,0 +1,297 @@
+http://atariage.com/forums/topic/165697-fonts
+
+"T40" indicates if the font fits the 6 by 8 pixel 40 column text mode.
+"Low" tells you if lowercase is included.
+
+File  T40  Low  Year  Reference
+----  ---  ---  ----  -----------------------------------------------------------
+0000            1979  Namco arcades.
+0001       Yes  1982  Commodore 64 computer.
+0002       Yes  1980  Atari 800 computer.
+0003            1984  Vulgus arcade by Capcom.
+0004  Yes  Yes  1983  MSX computer.
+0005  Yes  Yes  1983  Memotech MTX computer.
+0006       Yes  1982  Tomy Tutor computer.
+0007            1986  Outlaws game by Ultimate.
+0008       Yes  1987  Giana Sisters game by Rainbow Arts.
+0009            1981  TI-99/4A computer menu.
+0010            1982  Commodore 64 PETSCII uppercase and graphics.
+0011       Yes  1982  Commodore 64 PETSCII upper- and lowercase.
+0012            1989  Plotting arcade by Taito.
+0013       Yes        Colecovision console. Apparently not the original font.
+0014            1981  005 arcade by Sega.
+0015       Yes  1982  ZX Spectrum(/Timex) computer.
+0016            1987  Herobotix game by Rack It.
+0017            1985  Blagger Junior game. Original Blagger by Alligata Software.
+0018       Yes  1977  Commodore PET and VIC-20 computer.
+0019                  Unknown.
+0020                  Unknown.
+0021            1992  Gameboy Garfield Labyrinth.
+0022                  Unknown.
+0023                  Unknown.
+0024                  Unknown.
+0025                  Unknown.
+0026                  Unknown.
+0027  Yes  Yes  1981  TI-99/4A computer (lowercase are small uppercase).
+0028  Yes  Yes        TI-99/4A computer lowercase modified.
+0029                  Unknown.
+0030                  Unknown.
+0031                  Unknown.
+0032                  Unknown.
+0033                  Unknown.
+0034                  Unknown.
+0035                  Unknown.
+0036                  Unknown.
+0037            1987  1943 arcade by Capcom.
+0038            1992  Aero Fighters arcade by Video System.
+0039            1987  Afterburner arcade by Sega.
+0040            1994  Art of Fighting 2 arcade by SNK.
+0041                  Unknown.
+0042                  Unknown.
+0043                  Unknown.
+0044                  Unknown.
+0045       Yes  1992  Arabian Magic arcade by Taito.
+0046       Yes  1994  Armored Warriors arcade by Capcom.
+0047       Yes  1988  Assault arcade by Namco.
+0048       Yes  1997  Battle Circuit arcade by Capcom.
+0049                  Unknown.
+0050            1992  Asterix arcade by Konami.
+0051            1992  Asterix arcade by Konami.
+0052            1987  Flak Attack arcade by Konami.
+0053            1991  Asteroids game by Accolade.
+0054       Yes        Unknown.
+0055            1990  Aurail arcade by Sega.
+0056            1993  Batsugun arcade by Toaplan.
+0057            1998  Blazing Star arcade by SNK.
+0058            1994  Blood Warrior by Kaneko.
+0059                  Unknown.
+0060                  Unknown.
+0061            1983  Chack'n Pop arcade by Taito.
+0062            1985  Chack'n Pop game by Sega. Original 1983 arcade by Taito.
+0063            1985  Bomb Jack game by Sega. Original 1984 arcade by Tehkan.
+0064                  Unknown.
+0065                  Unknown.
+0066            1994  Bubble Symphony arcade by Taito.
+0067       Yes        Unknown.
+0068                  Unknown.
+0069                  Unknown.
+0070            1990  Bonanza Bros arcade by Sega.
+0071       Yes  1990  Chiki Chiki Boys arcade by Capcom.
+0072            1990  Cliffhanger arcade by Data East.
+0073                  Commodore 64 1-writer.
+0074                  Commodore 64 7up.
+0075                  Commodore 64 Action Wave.
+0076                  Commodore 64 Aliens.
+0077       Yes  1986  Commodore 64 Alternate Reality.
+0078                  Commodore 64 Amigo.
+0079            1984  Commodore 64 Ancipital.
+0080       Yes        Unknown.
+0081       Yes        Unknown.
+0082       Yes        Unknown.
+0083            1985  Commodore 64 Temple of Apshai Trilogy.
+0084            1985  Commodore 64 Aqua Racer.
+0085            1984  Commodore 64 Arabian Nights.
+0086            1983  Commodore 64 Arcadia 64.
+0087            1989  Commodore 64 Arena.
+0088            1987  Commodore 64 Army Moves.
+0089                  Commodore 64 Astro Pilot.
+0090            1983  Commodore 64 Attack of the Mutant Camels and Burnin' Rubber.
+0091            1988  Commodore 64 Barbarian 2.
+0092            1985  Commodore 64 Batalyx.
+0093            1989  Commodore 64 Batman.
+0094            1983  TI-99/4A Jumpy game by Sofmachine.
+0095            1988  Commodore 64 Beyond the ice palace.
+0096            1985  Commodore 64 Blade Runner.
+0097            1983  Commodore 64 Blue Max.
+0098            1986  Commodore 64 Bombjack 2.
+0099       Yes        Commodore 64 Broderbund software.
+0100                  Unknown.
+0101                  Unknown.
+0102                  Unknown.
+0103                  Unknown.
+0104            1986  Commodore 64 Camel Trophy.
+0105            1985  Commodore 64 Cauldron.
+0106            1985  Commodore 64 Caverns of Eriban.
+0107            1984  Commodore 64 Caverns of Sillahc.
+0108            1984  Commodore 64 Cavelon.
+0109            1986  Commodore 64 Chimera.
+0110  Yes       2010  sometimes99er.
+0111  Yes       2010  sometimes99er.
+0112                  Unknown.
+0113            1985  Commodore 64 Commando.
+0114            1986  Commodore 64 Critical Mass.
+0115            1983  Commodore 64 Cuddly.
+0116                  Unknown.
+0117                  Unknown.
+0118                  Unknown.
+0119                  Unknown.
+0120       Yes        Unknown.
+0121       Yes        Unknown.
+0122  Yes       2010  Commodore 64 Critical Mass modified by sometimes99er.
+0123  Yes  Yes  2010  ZX Spectrum computer modified by sometimes99er.
+0124  Yes       2004  Commodore 64 computer modified by sometimes99er.
+0125                  Unknown.
+0126            1985  Commodore 64 A fistful of bucks.
+0127            1984  Commodore 64 Flip and Flop.
+0128            1984  Commodore 64 The Forest of Doom.
+0129            1986  Commodore 64 Ghosts 'n Goblins.
+0130            1984  Commodore 64 Gryphon.
+0131            1985  Commodore 64 Hotel.
+0132            1987  Commodore 64 IK+.
+0133            1985  Commodore 64 Imhotep.
+0134            1986  Commodore 64 Infiltrator.
+0135       Yes  1984  Commodore 64 Kaiser.
+0136                  Unknown.
+0137                  Unknown.
+0138                  Unknown.
+0139                  Unknown.
+0140                  Unknown.
+0141       Yes        Unknown.
+0142                  Unknown.
+0143       Yes        Unknown.
+0144            1989  Commodore 64 Led Storm.
+0145            1988  Commodore 64 Lethal.
+0146                  Unknown.
+0147                  Unknown.
+0148                  Unknown.
+0149                  Unknown.
+0150                  Unknown.
+0151                  Unknown.
+0152                  Unknown.
+0153                  Unknown.
+0154            1984  BBC Microcosm.
+0155            1984  Commodore 64 Rocket Roger.
+0156                  Unknown.
+0157                  Unknown.
+0158            1984  Commodore 64 Underwurlde.
+0159                  Unknown.
+0160                  Unknown.
+0161                  Unknown.
+0162                  Unknown.
+0163                  Unknown.
+0164            1984  Commodore 64 The Staff of Karnath.
+0165            1988  Commodore 64 The Vindicator.
+0166            1987  Commodore 64 Cosmic Causeway: Trailblazer II.
+0167                  Unknown.
+0168                  Unknown.
+0169                  Unknown.
+0170                  Unknown.
+0171                  Unknown.
+0172                  Unknown.
+0173                  Unknown.
+0174                  Unknown.
+0175                  Unknown.
+0176                  Unknown.
+0177                  Unknown.
+0178                  Unknown.
+0179            1995  Gameboy Donkey Kong Land.
+0180  Yes  Yes        Unknown.
+0181       Yes        Unknown.
+0182       Yes        Unknown.
+0183            2010  Atari 2600 Defender digits. Additional characters by sometimes99er.
+0184  Yes       1979  TI-99/4 computer.
+0185       Yes        Unknown.
+0186       Yes  1987  Commodore 64 Minas Gundur.
+0187       Yes        Unknown.
+0188       Yes        Unknown.
+0189       Yes        Unknown.
+0190       Yes        Unknown.
+0191                  Unknown.
+0192                  Unknown.
+0193                  Unknown.
+0194                  Unknown. Digits added by sometimes99er.
+0195       Yes        Unknown.
+0196                  TI-99/4 computer outlined.
+0197                  Unknown. Slightly extended and modified by sometimes99er.
+0198                  Unknown.
+0199       Yes        Unknown.
+0200                  Unknown.
+0201                  Unknown. Color reduced, modified and extended by sometimes99er.
+0202                  Unknown.
+0203                  Unknown.
+0204       Yes        Unknown.
+0205                  Unknown. Slightly modified by sometimes99er.
+0206                  Unknown.
+0207       Yes        Unknown. Slightly modified by sometimes99er.
+0208       Yes        Unknown. Slightly modified by sometimes99er.
+0209       Yes        Unknown. Slightly modified by sometimes99er.
+0210                  Unknown.
+0211                  Unknown.
+0212                  Unknown.
+0213       Yes        Unknown.
+0214                  Unknown. Slightly modified by sometimes99er.
+0215            1980  Carnival arcade by Sega.
+0216                  Unknown.
+0217  Yes  Yes        Unknown.
+0218            1983  Dingo arcade by Ashby Computers and Graphics Ltd. (Jaloco license).
+0219                  Unknown.
+0220  Yes  Yes        TI-99/4A computer with lowercase from TurboForth.
+0221  Yes  Yes        TI-99/4 computer with lowercase by sometimes99er.
+0222                  Unknown.
+0223            1981  Lady Bug, Mr. Do!, Mr. Do's Castle, Do! Run Run and Jumping Jack arcades by Universal.
+0224            1982  Lost Tomb arcade by Stern.
+0225            1982  Tazz-Mania arcade by Stern.
+0226            1982  Triple Punch arcade by KKI.
+0227                  Unknown.
+0228            1991  Cutton game by Success.
+0229            1991  Cutton game by Success. Shadow slightly modified by sometimes99er.
+0230  Yes  Yes  1983  TI-99/8 computer.
+0231                  Unknown.
+0232       Yes        Unknown.
+0233       Yes  1987  Faxanadu game by Hudson Soft.
+0234       Yes  1998  Dance Dance Revolution arcade by Konami.
+0235       Yes  1998  Dance Dance Revolution arcade by Konami. Shadow slightly modified by sometimes99er.
+0236       Yes  1985  Amiga standard Topaz font up to Workbench 1.3.
+0237       Yes  1990  Amiga standard Topaz font from Workbench 2.0.
+0238       Yes  1985  Atari ST.
+0239       Yes  1988  Ghouls 'n Ghosts arcade by Capcom. Slightly modified by sometimes99er.
+0240            1989  Gradius III arcade by Konami.
+0241            1986  KiKi KaiKai (Mysterious Ghost World) arcade by Taito.
+0242            1986  Legendary Wings arcade by Capcom.
+0243       Yes  1996  Ninja Masters arcade by ADK.
+0244            1989  Shadow Dancer arcade by Sega.
+0245  Yes  Yes  1999  Rising Zan: The Samurai Gunman by UEP Systems.
+0246       Yes        Unknown.
+0247       Yes        Unknown.
+0248       Yes        Unknown.
+0249       Yes        Unknown.
+0250       Yes        Unknown.
+0251       Yes        Unknown.
+0252       Yes        Unknown.
+0253       Yes        Unknown.
+0254       Yes        Unknown.
+0255       Yes        Unknown.
+0256       Yes        Unknown.
+0257       Yes        Unknown.
+0258       Yes        Unknown.
+0259  Yes  Yes        Unknown.
+0260       Yes        Unknown.
+0261       Yes        Unknown.
+0262                  Unknown.
+0263                  Unknown.
+0264       Yes        Unknown.
+0265                  Unknown. Slightly modified by sometimes99er.
+0266                  Unknown. Slightly modified by sometimes99er.
+0267                  Unknown. Slightly modified by sometimes99er.
+0268                  Unknown.
+0269                  Unknown.
+0270            1984  ZX Spectrum Frank N Stein PSS.
+0271            1991  ZX Spectrum Brainsport Arno van der Hulst.
+0272            1994  ZX Spectrum Klad: Chast 1 Technotime.
+0273            1991  ZX Spectrum Zona 0 Topo Soft.
+0274  Yes  Yes  1977  TRS-80 computer (Tandy/Radio Shack Z80).
+0275  Yes  Yes  1983  Coleco Adam computer.
+0276       Yes  1979  Intellivision console.
+0277       Yes  1982  Jupiter Ace computer.
+0278       Yes        Unknown.
+0279                  Unknown.
+0280                  Unknown.
+0281                  Unknown.
+0282                  Unknown.
+0283       Yes        Computer 2013.
+0284       Yes        darkrose.
+0285                  Unknown.
+0286       Yes        Unknown.
+0287       Yes        Unknown.
+0288  Yes       2017  TI-99/4A capital letters modified by sometimes99er. http://atariage.com/forums/topic/165697-/page-12#entry3825851
+0289  Yes       2017  TI-99/4A capital letters modified by sometimes99er. http://atariage.com/forums/topic/267879-/page-2#entry3830364

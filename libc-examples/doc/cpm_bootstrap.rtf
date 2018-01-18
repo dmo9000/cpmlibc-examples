@@ -1,0 +1,276 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\froman\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset0 Times New Roman;}{\f2\fmodern\fcharset0 Courier New;}{\f3\fmodern\fcharset0 Lucida Console;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Msftedit 5.41.15.1507;}\viewkind4\uc1\pard\qc\f0\fs24 How to Bootstrap CP/M on a Classic S-100\par
+System When No System Disk is Available\par
+\par
+January 2, 2008\par
+Richard Cini\par
+http://www.classiccmp.org/cini\par
+\pard\par
+\par
+\f1 (Edits in []'s by Herb Johnson 1/13/08 and later. Document used with permission from Richard Cini. Check Rich's Web site at the following link for more about his work: \cf1\ul http://www.classiccmp.org/cini/my_imsai.htm \cf0\ulnone  as of Sept 2008. A copy of this document is there at \cf1\ul http://www.classiccmp.org/cini/docs/How%20to%20Bootstrap%20CPM.doc)\cf0\ulnone\par
+\f0\par
+\pard\qj\tab One of the greatest challenges in restoring a classic S-100 microcomputer system to full operation is finding known-good operating system disks in the proper configuration. This is not to say that this is the only challenge, but it\rquote s probably one of the most difficult (on the surface) to overcome because original system disks aren\rquote t widely available, notwithstanding the efforts of some to create and maintain archives of system disks. Don Maslin probably had the largest and most diverse collection of system disks which he would provide to anyone who asked for nominal cost. When Don passed away a few years ago, the archive unfortunately went with him. \par
+\par
+\pard\fi720\qj Unlike the IBM-PC standard to which manufacturers built their \ldblquote clone\rdblquote  systems, there were no common hardware configurations across S-100 manufacturers because of the high level of customization that could be done with the S-100 platform. The high degree of hardware customization afforded to users presents a significant challenge to the system restorer. Without access to \ldblquote virgin\rdblquote  system masters from the original manufacturer (a copy of CP/M which has not been modified or tweaked for use with a specific configuration but otherwise works with the hardware combination), one must locate a copy of CP/M with a configuration that matches the configuration of the system being restored. \par
+\pard\qj\par
+\tab This is what has frustrated me for months in the restoration of an IMSAI that I received as a donation in 2006. This how-to is as a result of the efforts of a single person who contacted me and offered to help me build a new floppy system from scratch; a process he went through just several months prior with nearly an identical configuration. To John Singleton, I am very grateful.\par
+\page\ul Restoration of my IMSAI Floppy System\par
+\ulnone\par
+\ul Introduction\par
+\ulnone\par
+\tab In 2006, I adopted a fully-loaded IMSAI system that was in very good physical and good operational condition. It came with lots of spare cards and 8\rdblquote  disks, and was configured as follows:\par
+\par
+\pard\fi-360\li720\qj\tx720\f2 o\tab\f0 IMSAI with a Z80 CPU card (replacing the stock 8080 card)\par
+\f2 o\tab\f0 48k of SRAM in three, 16k boards\par
+\f2 o\tab\f0 No terminal card (I added a Solid State Music 2p+2s card and configured it for both Altair and IMSAI compatibility).\par
+\f2 o\tab\f0 iCOM \ldblquote Frugal Floppy\rdblquote  disk interface and a separate dual-8\rdblquote  floppy drive subsystem with CP/M 1.4 disks. This is a completely TTL system - there are no LSI floppy controller chips like the i8272 - and therefore requires very specific (and uncommon) software to run.\par
+\pard\qj\par
+\pard\fi720\qj During the initial check-out of this system I wanted to archive the 200 or so 8\rdblquote  disks that came with the system, many of which included some interesting programs. It was during this phase that I discovered two things. First, the FD400 floppy drives that are part of the Frugal Floppy system were generally unreliable - out of four drives (which include working spares) there\rquote s only one drive that works reliably. Maybe this was due to being shipped cross-country or otherwise - I don\rquote t know - but it didn\rquote t much matter as they are operationally unreliable. So, straight diskette duplication before archiving was out unless I wanted to spend months swapping floppies in a single drive or archiving each disk file-by-file.\par
+\par
+I considered using this great disk archiving program from Dave Dunfield which consists of a small client program that\rquote s uploaded to the target machine and which reads and transmits the disk data over a serial port to the host program running on a PC. Unfortunately, this utility requires CP/M v.2.2 but my system only came with v.1.4. I polled several mailing lists and the comp.os.cpm news group about obtaining a copy of a disk from someone. Based on the lack of feedback I received, I must be the only one with a working iCOM floppy system.\par
+\pard\qj\par
+\ul Evaluating Alternatives\par
+\pard\fi720\qj\ulnone\par
+I became a little discouraged at the prospect of not having a floppy system for my IMSAI, so I embarked on a campaign of building a working floppy system around one of the other floppy cards I had acquired \ldblquote just in case.\rdblquote  The 8\rdblquote  floppy system is huge, heavy and noisy, so moving to a 5.25\rdblquote -based floppy system was somewhat desirable.\par
+\par
+At my disposal I had the following disk controllers: an SD Sales \ldblquote Versafloppy\rdblquote ; a NorthStar MDS-2A; and a CompuPro Disk 1. All of these use or can be configured to use the more reliable (and more widely available) 5.25\rdblquote  floppy disk drive. \par
+\par
+I knew that the NorthStar controller worked because it had been used previously in my NorthStar system. The operating condition of the other two cards was \ldblquote unknown\rdblquote  although expected to be working.\par
+\par
+The positive for the NorthStar controller was that I have a working Horizon system that I could use to build a new CP/M for the IMSAI. However, it was eliminated from consideration because it requires hard-sectored floppy disks which are pretty rare and I don\rquote t have enough to support two working systems. \par
+\par
+The other two controllers are reasonably flexible, are designed around the i8272 LSI floppy controller from Intel and can handle both 8\rdblquote  and 5.25\rdblquote  low-density floppy disk drives. What\rquote s nice is that a high-density (1.2mb) 5.25\rdblquote  floppy disk drive \ldblquote looks like\rdblquote  an 8\rdblquote  floppy drive to CP/M, thus widening the restoration possibilities. The electrical interface on the 5.25\rdblquote  drive is different in number of pins, but the recording density and spindle speed are the same (500kbps and 360 RPM, respectively) and is capable of stepping the required number of tracks (77 for a standard 8\rdblquote  disk). It is this similarity that will prove to be very useful for this project to proceed. \par
+\par
+I opted to start with the CompuPro controller only because I was able to locate a disk image for a CompuPro system with a Disk 1A controller. The Disk 1A is the double-density version of the Disk 1 and is similar enough that the boot disk should work with the Disk 1. I planned on using the disk image tool to write the 8\rdblquote  image onto a 1.2mb 5.25\rdblquote  floppy diskette and see if it would work.\par
+\par
+Even if converting the disk image works, the CP/M on the disk image probably wouldn\rquote t work because it had been customized for a different original system. Even so, I was prepared to give this method a try when help arrived.\par
+\par
+\pard\qj\ul Help Arrives\par
+\ulnone\par
+\tab With the efforts of scores of people interested in preserving the legacy of these \ldblquote pre-PCs\rdblquote , most if not all of the ingredients to do what I wanted to do existed \ldblquote in the Ether\rdblquote  but it wasn\rquote t until a chance correspondence from another hobbyist shined the light on the process that I was searching for.\par
+\par
+\tab Our systems were very similar with minor exceptions relating to the brand of console card and the memory map. My system had 48k of SRAM and he had a 64k CompuPro RAM17 board with the RAM at $F000 replaced with ROM. The 2k block of RAM at $F800 was used for variables and disk buffer space for the monitor ROM. \par
+\pard\fi720\qj\par
+The model system used a CompuPro Interfacer I serial card (8251 ACIA-based). My console card is UAR/T based and could be configured to look like the 8251 to software using it.\par
+\pard\qj\par
+\tab In order to make my system look as much like the model system as possible, I located and purchased a CompuPro RAM17 from a person who was a former CompuPro dealer. The RAM17 is a 64k SRAM card with 32, 6116 (2k x 8) SRAM chips. Since the pinout of the 6116 is compatible with the 2716 EPROM, you can drop an EPROM right into a socket on the board and it\rquote ll work perfectly.\par
+\par
+\pard\fi720\qj It was this dealer\rquote s last RAM17\'85finally some good fortune on this project. The RAM17 was pretty expensive but worth it since I could replace 4 memory cards and an EPROM card with a single card. At this point, I removed any extraneous boards, resulting in a very simple system consisting of a CPU card, dual-serial card, 64k of RAM and the CompuPro Disk 1 floppy controller.\par
+\pard\qj\par
+\ul The Goal and the Process\ulnone  \par
+\pard\par
+\pard\qj\tab The goal is to get a properly-configured copy of CP/M 2.2 onto a 5.25\rdblquote  diskette when no original system master exists. Broadly, the process is as follows:\par
+\par
+\pard\fi-360\li720\qj\tx720 0.\tab Locate and collect all of the required manuals and datasheets. I won\rquote t elaborate on this below as a separate section, but a restoration project cannot be completed without access to the manuals and schematics for the hardware. There are many manual archives on the Internet, so start collecting documents before beginning this process. The hardware needs to be configured properly (obviously) for the rest of the process to work.\par
+1.\tab Obtain or write a \ldblquote monitor\rdblquote  program that is configured for the hardware and working properly. In addition to basic monitor commands (like dumping and editing memory), it should have the ability to receive Intel HEX-formatted files and save them to memory (HEX files contain memory location information) and to cold- and warm-boot CP/M. I\rquote ve found having the CP/M Customized BIOS (CBIOS) as part of the monitor convenient because of the link between the jump table and the CBIOS (this is described later).\par
+2.\tab Validate that the host computer can communicate with the disk controller and the floppy drives.\par
+3.\tab Build and properly locate in memory a CP/M CBIOS and cold-start boot loader that matches the system hardware configuration and provides the essential hardware drivers for the CP/M BDOS (see the second point above). Having the CP/M start loader in EPROM will ease the job of moving the first CP/M programs to disk.\par
+4.\tab Build and properly locate in memory CP/M.\par
+5.\tab Upload the various parts to memory and write them out to a blank, formatted diskette.\par
+6.\tab Copy the standard CP/M programs to the newly-created bootable diskette.\par
+\pard\qj\par
+\pard\fi360\qj CP/M consists of four distinct parts which reside on a diskette in consecutive sectors occupying tracks 0 and 1. The one nice thing about CP/M is that the core parts are fixed in size for a given version and require no modification to accommodate various hardware configurations. The four parts are as follows:\par
+\pard\qj\par
+\pard\fi-360\li720\qj\tx720\f2 o\tab\f0 The cold-start/warm-start boot loader. This purpose of the boot loader is to load CP/M from diskette into high RAM and to transfer execution to the Console Command Processor. Most of the time, this loader resides on sector 1 of track 0 of a diskette, but it can also reside in EPROM. In the system configuration I\rquote m working with, it resides in EPROM and is part of the monitor code. Doing it this way avoids having to maintain a separate bootstrap program and to write a separate program to copy the loader to disk.\par
+\f2 o\tab\f0 The Console Command Processor (CCP). This module is the \ldblquote front end\rdblquote  of CP/M that handles user input (through the command prompt) and dispatches commands.\par
+\f2 o\tab\f0 The Basic Disk Operating System (BDOS). The BDOS is the \ldblquote back end\rdblquote  of CP/M that provides the callable system services API. The BDOS is the application-level abstraction of the hardware drivers provided by the next module.\par
+\f2 o\tab\f0 The Customized Basic Input Output System (CBIOS). The CBIOS provides the low-level hardware drivers which act as the interface between the hardware itself and the system services provided to user application by the BDOS.\par
+\pard\qj\par
+\pard\ul Step 1: The Monitor\par
+\pard\fi720\qj\ulnone\par
+Although I already had a working monitor program, the person I was working with on this rejuvenation project had a monitor program which contained everything I needed: it can examine and modify memory, test RAM, perform direct port I/O (needed for testing the controller), and load Intel HEX-formatted files into memory. Further, it has disk-related tools to format diskettes and to load and write CP/M to and from the diskette. These capabilities are will be important to rebuild a working system using the method presented below.\par
+\par
+\pard\qj\ul Step 2: Validate the Hardware\ulnone\par
+\par
+\tab As previously indicated, I bought the CompuPro controller as working, but I had previously not been able to test it. The Disk 1 can accommodate both 8\rdblquote  and 5.25\rdblquote  floppy drives through a single 50-pin 0.1\rdblquote  grid connector, using jumpers to reassign control signals to the correct pins for each drive format.\par
+\par
+\tab The first step in verifying that the controller works and can \ldblquote talk\rdblquote  to the disk drive is to ensure that each is jumpered and cabled properly.\par
+\par
+\tab\ul Cabling\par
+\ulnone\par
+\tab 8\rdblquote  drives use a 50-pin interface while the 5.25\rdblquote  drives use a 34-pin interface. The electrical interfaces are designed in such a way that they overlap: pin 1 of the 34-pin interface is pin 16 of the 50-pin interface, etc. Thus, if you line up pins 34 [pin 34 of the board connector with pin] 50 of the ribbon cable and work [check]backwards [for each signal line] the signals will line-up perfectly. \par
+\par
+\tab\ul Jumpers/Switches on the Controller/Cabling\par
+\ulnone\tab The Disk 1 has several jumpers which move around the control signals to the right disk interface pins depending on the drive type (shorthand, \ldblquote 8\rdblquote  or \ldblquote 5\rdblquote ). The controller\rquote s DIP switches and pin jumpers should be [were] set as follows [for my 5" drive]:\par
+\par
+\pard\qj\tx1560\f3\tab Switch\par
+\pard\qj\tab\tab\ul 12345678\par
+\pard\qj\tx720\ulnone\tab S1:\tab 10010000 \par
+\pard\qj\tx720\tx1440\tx2880\tab S2:\tab 11001111\par
+\pard\qj\f0\par
+\pard\qj\tx720\tx1440\tx2880\f3\tab J11:\tab open*\tab J12:\tab open*\tab J13: \ldblquote 5\rdblquote\tab\tab J14: closed\par
+\pard\qj\tab J15:\tab A-C\tab\tab J16: B-C\tab\tab J17: A-C\par
+\pard\fi720\qj\par
+* see note below\par
+\pard\qj\f0\par
+\tab In this configuration, the drive motor [which rotates the diskette] will run continuously when a diskette is inserted and the latch closed. This will increase head and disk surface wear because of the constant movement [of the disk surface over the head]. This is a side effect of modern disk drives being connected to old controllers - newer 5.25\rdblquote  drives are generally no longer configurable to respond to the head_load signal to enable the motor, relying solely on the motor_on signal on pin 16. The Disk 1 has a switch setting to address this but it places the motor under software control. \par
+\par
+\pard\fi720\qj I guess I could rebuild the CBIOS to enable the motor when performing a disk function, but the 8272 controller already puts out a signal we can use - head_load - we just have to do some fancy jumpering to put it on the right interface pin.\par
+\pard\qj\par
+\tab In order to turn the motor on only when needed by using the head_load signal we have to do two things. First, we need to isolate the head_load signal from the floppy cable at the disk drive because it\rquote s on the wrong pin. Second, we need to put a jumper between J11:\rdblquote 5\rdblquote  and J12:\rdblquote C\rdblquote . This connects the head_load signal from the 8272 which is available at J11 to pin 16 of the interface connector which is available at J12.\par
+\par
+\tab Of course, this is what I needed to do for my system [and TEAC drive]. If different disk drives are used, this procedure may need to be modified or not performed at all.\par
+\par
+\tab\ul Jumpers on the Drive and Cabling\par
+\ulnone\par
+\tab One of the more challenging aspects of using a modern 5.25\rdblquote  HD floppy drive with 25 year old hardware is that newer drives sometimes don\rquote t have the configuration flexibility to enable them to work. New drives have signals on certain pins that have other functions on old controllers. Pin 2 (density_select) and pin 34 (disk_change) are two examples of signals on new drives which conflict with the pin definition on old controllers (head_load and drive_ready, respectively). [In addition, older drives have additional jumpers to set various features. The IBM PC and compatibles used fewer features or options so newer drives were built without those jumpers. Try to obtain the technical manual for whatever drive you use so you know what jumpers and options you have.]\par
+\par
+\tab The floppy drive I used is a Teac FD-55GFR-7149. [Where did you get the manual?] Although this is a newer drive, it has a jumper that allows reassigning the pin 34 function (by strapping RY instead of DC). \par
+\par
+\pard\fi720\qj There is no jumper for pin 2 on this version of the FD-55GFR. The controller outputs the head_load signal on pin 2 and we don\rquote t want that signal transition to change the recording density of the drive. So, we use a low-tech way to prevent this conflict - a piece of clear cellophane tape placed over pin 2 of the drive edge connector isolates it from the cable. [suggestion: a piece of paper on the edge connector protects it from the adhesive.]\par
+\pard\qj\par
+\tab Of course, each drive needs to be strapped for the correct drive number [drive select] . Unlike the PC/AT (where the drives are all strapped for D1 and the cable twist fixes everything), straight-through cables are used, so each drive has to be strapped for its proper ID [drive select]. Finally, for this drive the E2 jumper has to be strapped [what function is this?].\par
+\pard\fi720\qj\par
+\ul Testing the Drives\ulnone\par
+\par
+[Actually this section is mostly about testing the controller, not the drive. You might write a short section on how you confirmed the operation of your Teac drives, and retitle this section "Testing the Controller" - Herb]\par
+\par
+Before this project can continue, the host-to-drive interface has to be tested. This tests communication between the host and the controller, and from the controller to the drive. Small test programs can be written and uploaded to memory using the HEX file loader, or if the monitor program contains direct I/O commands, those can be used as well.\par
+\par
+The monitor I used had direct I/O capability, so I borrowed some basic code from John and used the I/O capability to talk to the floppy controller command and data [I/O] ports (located at 0xC0-C1). Most commands are multiple-byte commands, but an easy one to test is the \ldblquote seek\rdblquote  command. Seek is a three-byte command: 0x0f, 0xXX, 0 (where \ldblquote XX\rdblquote  is the track number in hexadecimal). If everything is connected properly and the hardware works, the disk head carriage should move to the appropriate track. Sending the command 0x0f, 0, 0 will \ldblquote home\rdblquote  the heads. The 8272 data sheet provides a listing of some of the other commands available - get status is another easy one to try.\par
+\par
+If the hardware passes this test, then building the software part of the system can proceed. If it does not work, troubleshooting will be necessary until controller-to-drive communications can be confirmed - without that, the software part won\rquote t matter. [Also, keep in mind that untested features of the drive and controller will be in doubt, untill you run software which operates those features.]\par
+\par
+\pard\qj\ul Step 3: Build and Locate the CBIOS\ulnone\par
+\par
+\tab The standard approach for generating a new CP/M configuration from a system master is outlined in the CP/M Alteration Guide, but it unfortunately assumes the existence of a working CP/M system. \par
+\par
+\tab As mentioned above, the CBIOS contains the base hardware drivers for booting the system, communicating with the console and line printer (if so configured), and interfacing with the disk controller. Normally these routines are stored on disk and loaded by the cold-start loader along with the rest of CP/M. The CBIOS has two parts - it starts with a table of addresses to the included routines (the jump table) [no, as a table of JMP instructions], and the routines themselves. The table always refers to the same 17 CBIOS routines and [the jumps are] always in the same order. Because of the way a normal CP/M system is built (consecutively on disk and in RAM memory), CP/M always knows the location of the jump table.\par
+\pard\fi720\qj  \par
+In the configuration I used, the CBIOS is in EPROM [because the controller code is part of the monitor in EPROM. B]ut the jump table is loaded into RAM by the cold-start loader. If the CBIOS exists in EPROM but the jump table is to be loaded into RAM by the loader, how do we get this to work? The magic is [this:] when the CP/M disk is saved to disk[,] CP/M is located in memory such that only the code up to the end of the jump table is written to disk, leaving the remainder of the CBIOS in EPROM. [But the CBIOS table must be assembled with the monitor, so its table of  jumps to monitor code will be correct.] The illustration later on will make this clearer.\par
+\pard\qj\par
+\tab The memory configuration in this system is somewhat unique because it\rquote s configured with a \ldblquote hole\rdblquote  in memory (i.e., RAM below \ul and\ulnone  above EPROM). RAM above the EPROM is used for monitor variables and disk buffer storage, thus maximizing the memory available to CP/M as transient memory. Here\rquote s what the system memory map looks like before considering CP/M:\par
+\pard\fi720\qj\par
+\par
+\f3 +--------------+\par
+\pard\fi720\qj\tx1440 +\tab RAM\tab\tab +\tab 2k@ $F800 (buffers, vars, etc.)\par
++--------------+\par
++\tab EPROM\tab +\tab 2k@ $F000 (monitor, CBIOS)\par
+\pard\fi720\qj +--------------+\par
+~\tab\tab\tab ~\par
+~\tab RAM\tab\tab ~\tab (60k)\par
+~\tab\tab\tab ~\par
++--------------+\tab 0\par
+\f0\par
+\par
+The source file for the monitor EPROM contains code for the CBIOS jump table with an ORG statement locating it at the right place in RAM memory. This is done so that the HEX file has the correct destination address and the jump table contains the correct target addresses. When the monitor is cross-compiled [assembled], the resulting jump table can be split out of the HEX file and loaded into RAM memory separately. This is part of the magic.\par
+\pard\qj\par
+\pard\fi720\qj The Location Table in the Alteration Guide indicates at what address the CBIOS jump table is to be located based on the memory size (in increments of 1k [1K hex or 1024 decimal]) of the system. This table should be located as high in memory as possible while not overlapping the monitor located at $F000. \par
+\par
+Looking at the table, a 62k system configuration has the CBIOS jump table located at $F200 (which is clearly in the middle of the monitor and won\rquote t work). A 61k system configuration locates this table at $EE00 - far enough below the monitor that there will be no conflicts. The jump table ends at $EE00 + (18*3) -1 or $EE35. \par
+\par
+In addition to the location of the CBIOS, the Location Table also indicates where the CCP and BDOS are to be located. Working backwards from the system size, the table indicates that for a 61k system, the CCP will be located at $D800 and the BDOS will be located at $E000. \par
+\page At the end of this step, the memory map looks as follows:\par
+\par
+\pard\fi720\qj\tx360\f3 +==============+\tab $FFFF\par
+\pard\fi720\qj\tqc\tx1800 +\tab RAM\tab\tab +\tab\tab 2k (RAM buffers, vars, etc.)\par
+\pard\fi720\qj\tx1440 +--------------+\tab $F800\par
+\pard\fi720\qj\tqc\tx1800 +\tab ROM\tab\tab +\tab\tab 2k (monitor, CBIOS)\par
+\pard\fi720\qj +--------------+\tab $F000\par
++     RAM\tab\tab +\tab\tab unused RAM/inaccessible\par
++--------------+\tab $EE36\par
+\pard\fi720\qj\tqc\tx1800 + \tab RAM\tab\tab + \tab\tab CBIOS jump table\par
++--------------+\tab $EE00 \par
++ \tab RAM\tab\tab + \tab\tab BDOS\par
++--------------+\tab $E000\par
++\tab RAM\tab\tab +\tab\tab CCP\par
++--------------+\tab $D800\par
+~\tab\tab\tab ~\par
+~\tab RAM\tab\tab ~\tab TPA\par
+~\tab\tab\tab ~\par
++--------------+\tab $0100\par
++\tab RAM\tab\tab +\tab\tab CP/M SysVars\par
+\pard\fi720\qj +==============+\tab 0\par
+\f0\par
+\pard\qj\tab I used the TASM cross-compiler for the PC to build the monitor/CBIOS/jump table. The assembler can produce an Intel-formatted HEX file which is split into two pieces - one for the jump table and one to be used to burn an EPROM for the monitor and CBIOS. \par
+\par
+\pard\fi720\qj The jump table file is later merged with the HEX file containing the CP/M system compiled in Step 4 of this process. \par
+\par
+\pard\qj\ul Step 4: Build and Locate CP/M\ulnone\par
+\par
+\tab Above we determined all of the address information that is needed in order to build the CCP and BDOS pieces of CP/M, but we need the code for CP/M and some way to build it.\par
+\par
+[Rich, your procedures here are very different from the procedures in the DRI manuals. You assemble from source, DRI uses a special program to relocate the BDOS and CCP as object files, which are then loaded into memory with a desired CBIOS; and then saved to disk. Since some people reading this will have the DRI CP/M manuals in hand, I think you should explain briefly 1) what the DRI manual says, as I've said it here; and 2) describe why you decided to work directly from source code instead. - Herb]\par
+\par
+\tab This is where the Internet is very helpful. Many people have worked hard to preserve aspects of early computing, including preserving source code and related works. Without the availability of this information, this kind of project would not be possible.\par
+\par
+\tab There is a substantial CP/M source code archive located at ["the unofficial CP/M archive"] at \cf1\ul http://www.cpm.z80.de/source.html\cf0\ulnone . [They have an agreement with the current owners of CP/M to have this archive of CP/M products for personal use.] About half-way down the page, there is a link to the ["]source code["] for CP/M 2.2. It\rquote s not the original DR[I] source code, but rather a decompilation of a memory image that has been made recompilable. The archive contains both 8080- and Z80-nmemonic source files. \par
+\par
+\pard\fi720\qj The [8080] code is designed to be built with the Digital Research's assembler [ASM], a CP/M-based assembler distributed as part of CP/M that compiles only 8080 code. Thus, I worked with the 8080-target code from the above archive; 8080 object code with [which] run[s] on both 8080 and Z80-based systems. The only change that should be required to the source file is to define the proper starting location for the CCP. This equate has to match the CCP value calculated in Step 3.\par
+\pard\qj\par
+\tab I did not have ready access to another CP/M machine to build a new system so I turned to another useful tool - an emulator, [running under MS-DOS] - to complete this part of the task. I used the MyZ80 emulator by Simeon Cran (\cf1\ul www.znode51.de/specials/myz80.htm\cf0\ulnone  and mirrored elsewhere), a PC-compatible software which emulates a Z80-based computer running CP/M 2.2.\par
+\par
+\tab I imported the modified source code for CP/M into the emulation environment using the emulator\rquote s built-in tools, assembled the code using ASM, and exported the resulting Intel-formatted HEX file back to the host PC environment. This file is merged with the CBIOS jump table file to produce a single HEX file containing a complete CP/M working set which will be uploaded to memory and written to disk in Step 5.\par
+\par
+\ul Step 5: Final EPROM Changes and Create New Bootable Diskette\ulnone\par
+\par
+\tab The final step of this process can be broken down into several steps outlined below. The monitor program I used already had some key routines built in that are critical for the final phase of this project -- the ability to format blank diskettes, to copy CP/M from memory to a diskette, and to cold-boot CP/M from a diskette.  [See "References" at the end of this document for the origins of the ROM monitor. - Herb]\par
+\par
+\pard\fi720\qj\ul Format blank diskettes\ulnone . The monitor program used contains a small routine to send the proper commands to the disk controller in order to format blank disks. The sector fill byte is 0xE5 and the format is 77 tracks of 26, 128-byte sectors per track. [Note: this is a typical format for 8-inch diskettes. Many CP/M systems have a seperate "format" program independent of ROM monitors. - Herb]\par
+\par
+\ul Create routine to put CP/M on a blank diskette\ulnone . Again, the monitor program used contains a PutCPM routine that saves a specified region of memory to the disk. The 8272 has a multi-sector write DMA mode which takes as parameters the starting memory location, the number of sectors to write and the starting track and sector as parameters and uses that to write the area of memory to disk. For this system we have to write a total of 45 sectors to disk ($EE35-$D800+1 = 5686d/128 bytes/sector = 44.4 sectors). This is written to disk in two parts - 26 sectors (of Track 0) and 19 sectors (of Track 1). There\rquote s the magic in action - the CBIOS jump table is written to disk during the PutCPM call.\par
+\pard\li720\qj\par
+\pard\fi720\qj The monitor EPROM also contains a corresponding GetCPM routine which uses a multi-sector read call to re-load CP/M [from the boot tracks] during the cold-start or warm-start routines. Both of these routines are standard parts of the CBIOS template.\par
+\pard\li720\qj\par
+\pard\fi720\qj\ul Load the CP/M image to memory\ulnone . Once the GetCPM/PutCPM routines have been modified to load and save the correct number of sectors, it\rquote s time to load CP/M into memory and write it to disk. The monitor\rquote s built-in HEX file loader is used to load the CP/M HEX file into memory. Again, a HEX file contains address location information, so the memory addresses can be discontinuous. This file contains all of the critical parts of CP/M which are to be saved to disk using the PutCPM program.\par
+\pard\li720\qj\par
+\pard\fi720\qj\ul Move CP/M to diskette\ulnone . Using the PutCPM program in the monitor EPROM, the range of memory containing CP/M is written to Tracks 0 and 1 of a blank, formatted diskette.\par
+\par
+If all goes well, jumping to the cold-start loader located in EPROM should read CP/M from disk and jump to the CCP which would put the \ldblquote A>\rdblquote  prompt on the screen. If this occurs, congratulations -- a new CP/M disk has been created!\par
+\par
+This new diskette has only CP/M on it. It obviously does not include the transient programs which would normally be included with a commercial CP/M distribution. As with the CP/M source code, these programs are likewise available on the Internet [, at the CP/M archive site and other archive sites]. The next task is to use various tools at our disposal to move these programs onto the new master disk just created.\par
+\par
+\pard\qj\ul Step 6: Move the \ldblquote Base CP/M\rdblquote  Transient Programs to the Master Disk\ulnone\par
+\par
+\pard\fi720\qj We have just created a new CP/M master diskette for our system but it contains no transient programs. If you do \ldblquote DIR\rdblquote  at the prompt, you will get a \ldblquote No File\rdblquote  error [message, not an error!] , indicating that the disk is empty.\par
+\par
+The \ldblquote standard\rdblquote  CP/M distribution included 11 transient programs and a library file which have to be transferred to this master disk:\par
+\par
+\pard\fi-360\li1080\qj\tx1080\f2 o\tab\f0 ASM - an 8080-target assembler\par
+\f2 o\tab\f0 DDT - Dynamic Debugging Tool (a code debugger)\par
+\f2 o\tab\f0 DUMP - dump a program to the console in HEX format\par
+\f2 o\tab\f0 ED - a text editor\par
+\f2 o\tab\f0 LOAD - make a COM file from a HEX file\par
+\f2 o\tab\f0 MOVCPM - relocate and execute a CP/M system for a new memory size\par
+\f2 o\tab\f0 PIP - Peripheral Interchange Program (copies files among devices)\par
+\f2 o\tab\f0 STAT - disk and file statistics\par
+\f2 o\tab\f0 SUBMIT - execute a SUB batch file\par
+\f2 o\tab\f0 SYSGEN - write a copy of CP/M from memory to a new diskette\par
+\f2 o\tab\f0 XSUB - the \ldblquote extended\rdblquote  SUBMIT utility\par
+\f2 o\tab\f0 DISKDEF.LIB - disk definition library\par
+\pard\li720\qj\par
+\pard\fi720\qj In order to get these standard transient programs onto the new master diskette, I used the process described below. This process relies on the HEX loader \ul and\ulnone  CP/M cold-start loader in the monitor EPROM. The cold-start loader needs to be modified to return to the monitor at the end of the bootstrap process rather than jumping to the CCP. It\rquote s this linkage back to the monitor which enables us to move the initial files to the diskette.\par
+\par
+\pard\fi-360\li1080\qj\tx1080\f2 o\tab\f0 Convert the transient COM files downloaded from the Internet into Intel HEX files using the \ldblquote bin2hex\rdblquote  utility (widely available) [where?]. The CP/M transient program loader loads COM programs to RAM starting at location $100. When converting these programs to HEX, a command line parameter \ldblquote -o256\rdblquote  needs to be added so that the HEX file is begun at address 0x100 rather than 0 (the default).\par
+\f2 o\tab\f0 Start up the monitor and load CP/M into memory using the monitor\rquote s cold-boot command (my monitor uses Control-C to load CP/M). When this is done, the system should return to the monitor prompt (because it had been configured to return to the monitor rather than to CP/M). [Rich, you may want to be explicit about this change back and forth, early on; or, simply keep your monitor's command to load CP/M but not run it, and use a "GO XXXX" command to run CP/M so it's a user choice. - Herb]\par
+\f2 o\tab\f0 Upload the HEX file to memory using the terminal (I use an old Compaq laptop as my terminal).\par
+\par
+[This would be a good place to mention that moving HEX files is more reliable than moving binary files, as the HEX files are self-verifying and explicitly target specific memory. Binary files have no checksums and no obvious memory location information. - Herb]\par
+\pard\qj\par
+\pard\fi720\qj At this point, both CP/M and the program that is to be written to disk have been loaded into memory. From the monitor prompt start CP/M by jumping to the address CCP+$03 (in my system, that address is $D803). The CP/M prompt should appear on the terminal screen.\par
+To save the transient program from memory to disk the CP/M \ldblquote SAVE\rdblquote  command can be used. SAVE requires two parameters: the number of 256-byte blocks to save and the file name. When calculating the number of blocks, round up to the nearest block.\par
+For example, the program STAT is 5,248 bytes. 5248/256 = 20.5. Thus, the save command would be:\par
+\par
+\f3\tab A>SAVE 21 STAT.COM\par
+\pard\qj\f0\par
+\tab Finally, return to the monitor from CP/M by typing Control-C and repeat the process for each file. When this process has been completed, the monitor can again be modified to jump to CCP on a cold- or warm-start rather than jumping back to the monitor. Once the base CP/M programs exist on diskette, a different process can be used to move other programs onto the diskette (using ED, the editor, to capture the HEX file and save it to disk; LOAD to load the saved HEX file into memory as a binary file; and SAVE as was done above).\par
+\par
+[Rich, it may be tempting in use to hop back and forth between CP/M and the monitor, rather than load CP/M each time you move a file. I am not sure but I think you load CP/M each time. It's safer to do that, in case there are problems with initializing CP/M after loading it. So you might explain a bit more clearly, what you do each time and not just the first time. - Herb]\par
+\par
+\page\ul Conclusion\ulnone\par
+\tab\par
+\tab This has been an interesting and rewarding process which has restored my system and increased its usability greatly. Now that I\rquote ve gone through this process, I may attempt to generate a CP/M 2.2 disk for the original 8\rdblquote  system and see if I can use that new system master to archive the original 8\rdblquote  disks.\par
+\par
+\ul References and updates (by Herb Johnson)\ulnone\par
+\par
+[I was contacted by John Singleton in June 2009 about the monitor Rich was using. - Herb Johnson]\par
+\par
+As Richard credits at the end of page 1, he's using a several-versions-old monitor and CBIOS I'd put together for my IMSAI of similar configuration, and which, as I aided his process, we tweaked slightly as needed for his specific system.   His essay is the process we more or less went through.\par
+\par
+Credit for my monitor and CBIOS goes, in varying amounts, to Chris Johnston, Allison Parent, John Gill, Dave Dunfield, Bill Godbout, and myself.\par
+\par
+Thank you,  John Singleton\par
+\par
+}
+ 

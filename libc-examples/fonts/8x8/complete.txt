@@ -1,0 +1,85 @@
+0001       Yes  1982  Commodore 64 computer.
+0002       Yes  1980  Atari 800 computer.
+0004  Yes  Yes  1983  MSX computer.
+0005  Yes  Yes  1983  Memotech MTX computer.
+0006       Yes  1982  Tomy Tutor computer.
+0008       Yes  1987  Giana Sisters game by Rainbow Arts.
+0011       Yes  1982  Commodore 64 PETSCII upper- and lowercase.
+0013       Yes        Colecovision console. Apparently not the original font.
+0015       Yes  1982  ZX Spectrum(/Timex) computer.
+0018       Yes  1977  Commodore PET and VIC-20 computer.
+0027  Yes  Yes  1981  TI-99/4A computer (lowercase are small uppercase).
+0028  Yes  Yes        TI-99/4A computer lowercase modified.
+0045       Yes  1992  Arabian Magic arcade by Taito.
+0046       Yes  1994  Armored Warriors arcade by Capcom.
+0047       Yes  1988  Assault arcade by Namco.
+0048       Yes  1997  Battle Circuit arcade by Capcom.
+0054       Yes        Unknown.
+0067       Yes        Unknown.
+0071       Yes  1990  Chiki Chiki Boys arcade by Capcom.
+0077       Yes  1986  Commodore 64 Alternate Reality.
+0080       Yes        Unknown.
+0081       Yes        Unknown.
+0082       Yes        Unknown.
+0099       Yes        Commodore 64 Broderbund software.
+0120       Yes        Unknown.
+0121       Yes        Unknown.
+0123  Yes  Yes  2010  ZX Spectrum computer modified by sometimes99er.
+0135       Yes  1984  Commodore 64 Kaiser.
+0141       Yes        Unknown.
+0143       Yes        Unknown.
+0180  Yes  Yes        Unknown.
+0181       Yes        Unknown.
+0182       Yes        Unknown.
+0185       Yes        Unknown.
+0186       Yes  1987  Commodore 64 Minas Gundur.
+0187       Yes        Unknown.
+0188       Yes        Unknown.
+0189       Yes        Unknown.
+0190       Yes        Unknown.
+0195       Yes        Unknown.
+0199       Yes        Unknown.
+0204       Yes        Unknown.
+0207       Yes        Unknown. Slightly modified by sometimes99er.
+0208       Yes        Unknown. Slightly modified by sometimes99er.
+0209       Yes        Unknown. Slightly modified by sometimes99er.
+0213       Yes        Unknown.
+0217  Yes  Yes        Unknown.
+0220  Yes  Yes        TI-99/4A computer with lowercase from TurboForth.
+0221  Yes  Yes        TI-99/4 computer with lowercase by sometimes99er.
+0230  Yes  Yes  1983  TI-99/8 computer.
+0233       Yes  1987  Faxanadu game by Hudson Soft.
+0234       Yes  1998  Dance Dance Revolution arcade by Konami.
+0235       Yes  1998  Dance Dance Revolution arcade by Konami. Shadow slightly modified by sometimes99er.
+0236       Yes  1985  Amiga standard Topaz font up to Workbench 1.3.
+0237       Yes  1990  Amiga standard Topaz font from Workbench 2.0.
+0238       Yes  1985  Atari ST.
+0239       Yes  1988  Ghouls 'n Ghosts arcade by Capcom. Slightly modified by sometimes99er.
+0243       Yes  1996  Ninja Masters arcade by ADK.
+0245  Yes  Yes  1999  Rising Zan: The Samurai Gunman by UEP Systems.
+0246       Yes        Unknown.
+0247       Yes        Unknown.
+0248       Yes        Unknown.
+0249       Yes        Unknown.
+0250       Yes        Unknown.
+0251       Yes        Unknown.
+0252       Yes        Unknown.
+0253       Yes        Unknown.
+0254       Yes        Unknown.
+0255       Yes        Unknown.
+0256       Yes        Unknown.
+0257       Yes        Unknown.
+0258       Yes        Unknown.
+0259  Yes  Yes        Unknown.
+0260       Yes        Unknown.
+0261       Yes        Unknown.
+0264       Yes        Unknown.
+0274  Yes  Yes  1977  TRS-80 computer (Tandy/Radio Shack Z80).
+0275  Yes  Yes  1983  Coleco Adam computer.
+0276       Yes  1979  Intellivision console.
+0277       Yes  1982  Jupiter Ace computer.
+0278       Yes        Unknown.
+0283       Yes        Computer 2013.
+0284       Yes        darkrose.
+0286       Yes        Unknown.
+0287       Yes        Unknown.
