@@ -20,6 +20,7 @@ $(BIN_DIR)/lifegame.ihx:	$(LIFEGAME_OBJS)
 
 $(BIN_DIR)/lifegame.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/lifegame/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/lifegame.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/lifegame.arf
 	echo "src/lifegame/lifegame.rel" >> $(BIN_DIR)/lifegame.arf
 	sed -i '/^$$/d' $(BIN_DIR)/lifegame.arf
 

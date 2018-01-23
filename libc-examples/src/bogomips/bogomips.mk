@@ -20,6 +20,7 @@ $(BIN_DIR)/bogomips.ihx:	$(BOGOMIPS_OBJS)
 
 $(BIN_DIR)/bogomips.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/bogomips/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/bogomips.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/bogomips.arf
 	echo "src/bogomips/bogomips.rel" >> $(BIN_DIR)/bogomips.arf
 	sed -i '/^$$/d' $(BIN_DIR)/bogomips.arf
 

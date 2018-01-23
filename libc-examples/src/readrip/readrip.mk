@@ -20,7 +20,9 @@ $(BIN_DIR)/readrip.ihx:	$(READRIP_OBJS)
 
 $(BIN_DIR)/readrip.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/readrip/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/readrip.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/readrip.arf
 	echo "src/readrip/readrip.rel" >> $(BIN_DIR)/readrip.arf
+
 	sed -i '/^$$/d' $(BIN_DIR)/readrip.arf
 
 $(READRIP_DIR)/readrip.rel: $(READRIP_DIR)/readrip.c

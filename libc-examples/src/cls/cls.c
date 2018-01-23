@@ -15,7 +15,6 @@ int main()
     /* reset */
 
     set_term(TTY_VT100);
-
     term_reset();
     clear_screen();
 

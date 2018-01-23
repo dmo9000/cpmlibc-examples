@@ -20,6 +20,7 @@ $(BIN_DIR)/getfont.ihx:	$(GETFONT_OBJS)
 
 $(BIN_DIR)/getfont.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/getfont/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/getfont.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/getfont.arf
 	echo "src/getfont/getfont.rel" >> $(BIN_DIR)/getfont.arf
 	sed -i '/^$$/d' $(BIN_DIR)/getfont.arf
 

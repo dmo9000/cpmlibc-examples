@@ -1,4 +1,4 @@
-MAXALLOCS=50000
+MAXALLOCS=500
 # cat /proc/cpuinfo | grep "^processor" | wc -l
 #MAXALLOCS=100000
 
@@ -33,7 +33,7 @@ clean:	tools-clean examples-clean
 	cd fonts/8x8 && make clean
 
 
-install: libraries-install 
+install: diskimages 
 
 include tools.mk # Local tools
 #include libraries.mk # Libraries

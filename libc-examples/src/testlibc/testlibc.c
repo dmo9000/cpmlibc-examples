@@ -4,6 +4,6 @@
 
 int main(int argc, char *argv[])
 {
-    printf("libc linkage worked!\n");
+    puts("libc linkage worked!\n");
     exit(0);
 }

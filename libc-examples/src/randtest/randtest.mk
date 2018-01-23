@@ -20,6 +20,7 @@ $(BIN_DIR)/randtest.ihx:	$(RANDTEST_OBJS)
 
 $(BIN_DIR)/randtest.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/randtest/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/randtest.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/randtest.arf
 	echo "src/randtest/randtest.rel" >> $(BIN_DIR)/randtest.arf
 	sed -i '/^$$/d' $(BIN_DIR)/randtest.arf
 

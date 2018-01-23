@@ -20,6 +20,7 @@ $(BIN_DIR)/telnet.ihx:	$(TELNET_OBJS)
 
 $(BIN_DIR)/telnet.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/telnet/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/telnet.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/telnet.arf
 	echo "src/telnet/telnet.rel" >> $(BIN_DIR)/telnet.arf
 	echo "src/telnet/zmodem.rel" >> $(BIN_DIR)/telnet.arf
 	sed -i '/^$$/d' $(BIN_DIR)/telnet.arf

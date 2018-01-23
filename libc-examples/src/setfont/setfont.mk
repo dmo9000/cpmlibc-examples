@@ -20,6 +20,7 @@ $(BIN_DIR)/setfont.ihx:	$(SETFONT_OBJS)
 
 $(BIN_DIR)/setfont.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/setfont/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/setfont.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/setfont.arf
 	echo "src/setfont/setfont.rel" >> $(BIN_DIR)/setfont.arf
 	sed -i '/^$$/d' $(BIN_DIR)/setfont.arf
 

@@ -20,6 +20,7 @@ $(BIN_DIR)/cpstest.ihx:	$(CPSTEST_OBJS)
 
 $(BIN_DIR)/cpstest.arf:	$(LIBC_DIR)/link-static.arf
 	$(QUIET)$(SED) 's/$(REPLACE_TAG)/cpstest/' $(LIBC_DIR)/link-static.arf > $(BIN_DIR)/cpstest.arf
+	echo "/usr/share/sdcc/lib/z80cpm/libcpmextra.a" >> $(BIN_DIR)/cpstest.arf
 	echo "src/cpstest/cpstest.rel" >> $(BIN_DIR)/cpstest.arf
 	sed -i '/^$$/d' $(BIN_DIR)/cpstest.arf
 
