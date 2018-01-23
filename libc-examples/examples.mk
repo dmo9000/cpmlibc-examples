@@ -25,9 +25,7 @@ package-oem:
 
 push-oem:
 	cp *.arc ../../z80oem
-	cd ../z80oem
-	git commit -a -m `cat ../libc-examples/build-id`
-	git push
+	cd ../../z80oem && git commit -a -m "`( cd ../cpmlibc-examples && git log -1 --pretty=oneline --color=never )`" && git push
 
 build-drive9:
 	cd diskbuild && make clean && make
