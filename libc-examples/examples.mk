@@ -24,7 +24,7 @@ package-oem:
 	[ -d /usr/local/bbsd/data ] && sudo cp *.arc /usr/local/bbsd/data  
 
 push-oem:
-	cp *.arc ../z80oem
+	cp *.arc ../../z80oem
 	cd ../z80oem
 	git commit -a -m `cat ../libc-examples/build-id`
 	git push
