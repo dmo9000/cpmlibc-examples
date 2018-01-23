@@ -26,7 +26,7 @@ package-oem:
 push-oem:
 	cp *.arc ../z80oem
 	cd ../z80oem
-	git commit -a -m `cat ../osz/build-id`
+	git commit -a -m `cat ../libc-examples/build-id`
 	git push
 
 build-drive9:
