@@ -34,7 +34,9 @@ build-driveB:
 	dd if=/dev/zero ibs=256256 count=1 | tr "\000" "\345" > ~/src/z80pack/z80pack-1.34/cpmsim/disks/driveb.dsk
 
 iotestdata:
-	head -c 786432 < /dev/zero | tr '\0' '\101' > testdata/testfile.bin
+	cd iotest && make && ./mktest && cp testfile.bin ../testdata
+	# old way
+	# head -c 786432 < /dev/zero | tr '\0' '\101' > testdata/testfile.bin
 
 liblzf:
 	cd libs/liblzf-3.6-orig && make

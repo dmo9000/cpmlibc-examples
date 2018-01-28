@@ -32,6 +32,7 @@ clean:	tools-clean examples-clean
 	cd libs/liblzf-3.6-orig && make clean
 	cd pngrip && make clean
 	cd fonts/8x8 && make clean
+	cd iotest && make clean
 
 
 install: diskimages 

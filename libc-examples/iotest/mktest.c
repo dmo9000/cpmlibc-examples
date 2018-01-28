@@ -18,7 +18,7 @@ int main()
 	uint8_t c = 0;
 	uint32_t written = 0;
 
-	testfile = fopen("testdata.bin", "wb");
+	testfile = fopen("testfile.bin", "wb");
 
 	while (j < MAX_EXTENTS) {
 		e = j % EXTENTS_PER_MODULE;
