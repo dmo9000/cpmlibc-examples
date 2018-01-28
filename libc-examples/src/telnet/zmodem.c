@@ -288,7 +288,7 @@ int zmodem_detect(int s, const char *rb, int rbsize, const char *nb, int nboffs,
 void exit_check()
 {
     uint8_t c = 0;
-    c = cpm_getchar_noecho();
+    c = cpm_getchar_nonblock();
     if (c == 27) {
         printf("\n");
         zmodem_safe_exit();

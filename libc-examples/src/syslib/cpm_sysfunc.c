@@ -127,7 +127,7 @@ char cpm_getchar(void) {
     return f;
 }
 
-char cpm_getchar_noecho(void) {
+char cpm_getchar_nonblock(void) {
     char f = 0;
 	BDOSCALL cread = { C_RAWIO, { (uint16_t) 0x00ff } };
 	f = cpmbdos_extn(&cread, &ret_ba, &ret_hl);

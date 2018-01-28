@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     change_mode(MODE_NONE);
 
     while (running) {
-        c = cpm_getchar_noecho();
+        c = cpm_getchar_nonblock();
         lastchar = c;
 
         /* handle keystrokes */

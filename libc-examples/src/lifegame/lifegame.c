@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         inject_life(128);
 
 #ifndef __LINUX__
-        //while (cpm_getchar_noecho() == 0) {
+        //while (cpm_getchar_nonblock() == 0) {
         //   }
 #endif /* __LINUX__ */
 

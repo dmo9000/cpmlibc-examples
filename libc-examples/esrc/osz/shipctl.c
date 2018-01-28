@@ -88,11 +88,11 @@ int shipctl(char *payload)
 
 
     while (within_menu == true) {
-        c = cpm_getchar_noecho();
+        c = cpm_getchar_nonblock();
         /*
         if (c) {
             setcursor(1, 19);
-            printf("cpm_getchar_noecho() = %u\n", c);
+            printf("cpm_getchar_nonblock() = %u\n", c);
             }
         */
         switch (c) {

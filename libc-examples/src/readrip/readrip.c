@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 		y = 0;
 
         /*
-        while (cpm_getchar_noecho() == 0) {
+        while (cpm_getchar_nonblock() == 0) {
             // FIXME: busy waiting 
             }
         */
@@ -137,7 +137,7 @@ finish_up:
     fclose(ripfile);
 
 
-    while (cpm_getchar_noecho() == 0) {
+    while (cpm_getchar_nonblock() == 0) {
             /* FIXME: busy waiting */
             }
 
