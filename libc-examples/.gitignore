@@ -67,3 +67,5 @@ libc/*.lst
 libc/*.rel
 libc/*.sym
 libc/*.arf
+
+lbin/*
