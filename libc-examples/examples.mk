@@ -48,6 +48,9 @@ fonts-8x8:
 util-writerip: 
 	cd pngrip && make
 
+binaries-clean:
+	find bin -name "*.com" -exec rm -f {} \;
+	find bin -name "*.ihx" -exec rm -f {} \;
 
 
 examples-clean:

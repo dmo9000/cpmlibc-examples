@@ -18,44 +18,54 @@ typedef unsigned long uint32_t;
 
 int main(int argc, char *argv[])
 {
-  static char mybuf[128];
-	uint32_t offset = 0;
-	int rd = 0;
-  FILE *myfile = NULL;
+    static char mybuf[128];
+    uint32_t offset = 0;
+    int rd = 0;
+    int i = 0, j = 0;
+    FILE *myfile = NULL;
 
-	if (!argv[1]) {
-		printf("no filename provided\n");
-		exit(1);
-		} 
+    if (!argv[1]) {
+        printf("no filename provided\n");
+        exit(1);
+    }
 
     set_term(TERM_VT100);
     clear_screen();
 
-	myfile = fopen(argv[1], "rb");
+    myfile = fopen(argv[1], "rb");
 
-	if (!myfile) {
-		printf("error opening %s\n", argv[1]);
-		perror("fopen");
-		exit(1);
-		}
+    if (!myfile) {
+        printf("error opening %s\n", argv[1]);
+        perror("fopen");
+        exit(1);
+    }
 
-	while (!feof(myfile) && !ferror(myfile)) {
+    while (!feof(myfile) && !ferror(myfile)) {
         set_cursor(0, 0);
-		fseek(myfile, offset, SEEK_SET); 
-		rd = fread(&mybuf, 128, 1, myfile);
+        fseek(myfile, offset, SEEK_SET);
+        rd = fread(&mybuf, 128, 1, myfile);
         if (rd != 1) {
             printf("fread() didn't get 128 bytes\n");
             exit(1);
+        }
+        printf("offset = %lu, rd = %d\n", offset, rd);
+
+
+        for (i = 0 ; i < 8; i++) {
+            for (j = 0; j < 16; j++) {
+                printf("%02x ", mybuf[(i*16) + j]);
+                }
+                printf("\n");
             }
-		printf("offset = %lu, rd = %d\n", offset, rd);
-		/* write(0, &mybuf, rd); */
-		offset += (rd * 128);	
-		}
 
-	printf("final offset = %lu\n", offset); 
-	fclose(myfile);
+        /* write(0, &mybuf, rd); */
+        offset += (rd * 128);
+    }
 
-	exit(0);
+    printf("final offset = %lu\n", offset);
+    fclose(myfile);
+
+    exit(0);
 
 }
 
