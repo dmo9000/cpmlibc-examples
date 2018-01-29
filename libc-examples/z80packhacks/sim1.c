@@ -45,6 +45,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
 #include "sim.h"
@@ -2778,6 +2780,7 @@ static int op_djnz(void)		/* DJNZ */
 
 static int op_call(void)		/* CALL */
 {
+#pragma pack(push,1)
     typedef struct {
         uint8_t drive; // 0 -> Searches in default disk drive
         char filename[8]; // File name (when opening a '?' means 'any character')
@@ -2790,8 +2793,11 @@ static int op_call(void)		/* CALL */
         uint16_t rrec; // Random record to read/write
         uint8_t rrecob; // Random record overflow byte (MS)
     } FCB; /* File Control Block */
-		FCB *fcb1;
+#pragma pack(pop)
+	FCB *fcb1;
     register WORD i;
+    bool killflag = false;
+    uint16_t fcb_addr = 0;
 
     i = memrdr(PC++);
     i += memrdr(PC++) << 8;
@@ -2800,18 +2806,48 @@ static int op_call(void)		/* CALL */
 
     if (i == 0x0005) {
         /* BDOS call */
-        //printf("\r\nop_call(0x%04x, HL=%04x)\r\n", i, (H << 8) +  L);
         switch(C) {
+        case 15:
+            fcb_addr = (D << 8) + E;
+            printf("\r\nOPEN FILE[BDOS CALL, FUNC=%u, FCB=0x%04x]\r\n", C, fcb_addr);
+            getchar();
+            break;
         case 2:
         case 10:
         case 11:
             break;
         case 20:
-            printf("\r\n[BDOS CALL, FUNC=%u, FCB=0x%04x]\r\n", C, (D << 8) + E);
-						fcb1 = (FCB *) &memory[0] + 0x005c;
-						printf("ex-> 0x%02x\r\n", fcb1->ex);
-						printf("s2-> 0x%04x\r\n", fcb1->resv);
-            fflush(stdout);
+
+            fcb_addr = (D << 8) + E;
+            printf("\r\n[BDOS CALL, FUNC=%u, FCB=0x%04x]\r\n", C, fcb_addr);
+            fcb1 = (FCB*) &memory[0][fcb_addr];
+            printf("fcb->resv   = %04x\r\n", fcb1->resv);
+            /*
+            if (fcb1->resv != 0x8000) {
+                printf("fcb1->resv != 0x8000\r\n");
+                getchar();
+                }
+            */
+
+            printf("fcb->ex     =   %02x\r\n", fcb1->ex);
+            printf("fcb->rc     =   %02x\r\n", fcb1->rc);
+            printf("fcb->seqreq =   %02x\r\n", fcb1->seqreq);
+            printf("fcb->rrec   = %04x\r\n", fcb1->rrec);
+            printf("fcb->rrecob =   %02x\r\n", fcb1->rrecob);
+
+            /*
+            if (fcb1->seqreq == 0) {
+                printf("fcb1->seqreq == 0! is this special?\r\n");
+                getchar();
+                }
+            */
+
+            printf("\n");
+            fflush(NULL);
+            if (killflag) {
+                printf("+++ killflag set\r\n");
+                exit(1);
+                }
             break;
         default:
             printf("\r\n[BDOS CALL, FUNC=%u, DE=0x%04x]\r\n", C, (D << 8) + E);

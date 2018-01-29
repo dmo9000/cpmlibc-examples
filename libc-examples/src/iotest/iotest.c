@@ -41,8 +41,9 @@ int main(int argc, char *argv[])
     }
 
     while (!feof(myfile) && !ferror(myfile)) {
-        set_cursor(0, 0);
+       // set_cursor(0, 0);
         fseek(myfile, offset, SEEK_SET);
+        set_cursor(0, 0);
         rd = fread(&mybuf, 128, 1, myfile);
         if (rd != 1) {
             printf("fread() didn't get 128 bytes\n");
