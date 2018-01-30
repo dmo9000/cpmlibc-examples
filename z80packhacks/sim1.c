@@ -2780,6 +2780,9 @@ static int op_djnz(void)		/* DJNZ */
 
 static int op_call(void)		/* CALL */
 {
+
+//#define DEBUG_BDOS
+
 #pragma pack(push,1)
     typedef struct {
         uint8_t drive; // 0 -> Searches in default disk drive
@@ -2794,66 +2797,97 @@ static int op_call(void)		/* CALL */
         uint8_t rrecob; // Random record overflow byte (MS)
     } FCB; /* File Control Block */
 #pragma pack(pop)
-	FCB *fcb1;
+	FCB *fcb1 = 0x0000;         /* unambiguously none */
     register WORD i;
     bool killflag = false;
     uint16_t fcb_addr = 0;
+    uint16_t dma_addr = 0;
 
     i = memrdr(PC++);
     i += memrdr(PC++) << 8;
     memwrt(--SP, PC >> 8);
     memwrt(--SP, PC);
 
+#ifdef DEBUG_BDOS
     if (i == 0x0005) {
         /* BDOS call */
         switch(C) {
-        case 15:
-            fcb_addr = (D << 8) + E;
-            printf("\r\nOPEN FILE[BDOS CALL, FUNC=%u, FCB=0x%04x]\r\n", C, fcb_addr);
-            getchar();
+        case 0:
+            printf("\r\n[BDOS CALL, FUNC=P_TERMCPM, FCB=0x%04x]\r\n", fcb_addr);
             break;
         case 2:
         case 10:
         case 11:
             break;
-        case 20:
+        case 15:
+            fcb_addr = (D << 8) + E;
+            fcb1 = (FCB*) &memory[0][fcb_addr];
+            printf("\r\n[BDOS CALL, FUNC=F_OPEN, FCB=0x%04x]\r\n", fcb_addr);
+            printf("fcb1->filename = %.*s\r\n", 8, fcb1->filename);
+            printf("fcb1->filetype = %.*s\r\n", 3, fcb1->filetype);
+            break;        
+        case 17:
+            /* Also see note below regarding FCB usage for F_SNEXT */
+            fcb_addr = (D << 8) + E;
+            fcb1 = (FCB*) &memory[0][fcb_addr];
+            printf("\r\n[BDOS CALL, FUNC=F_SFIRST, FCB=0x%04x]\r\n", fcb_addr);         
+            printf("fcb1->filename = %.*s\r\n", 8, fcb1->filename);
+            printf("fcb1->filetype = %.*s\r\n", 3, fcb1->filetype);
+            break;
+        case 18:
+            /* 
+                See the notes here regarding FCB usage for this call 
+
+                    https://www.seasip.info/Cpm/bdos.html 
+                    
+               Not sure how to handle this yet since we'd have to track state between
+               F_SFIRST and F_SNEXT */              
+
 
             fcb_addr = (D << 8) + E;
-            printf("\r\n[BDOS CALL, FUNC=%u, FCB=0x%04x]\r\n", C, fcb_addr);
             fcb1 = (FCB*) &memory[0][fcb_addr];
-            printf("fcb->resv   = %04x\r\n", fcb1->resv);
-            /*
-            if (fcb1->resv != 0x8000) {
-                printf("fcb1->resv != 0x8000\r\n");
-                getchar();
-                }
-            */
-
-            printf("fcb->ex     =   %02x\r\n", fcb1->ex);
-            printf("fcb->rc     =   %02x\r\n", fcb1->rc);
-            printf("fcb->seqreq =   %02x\r\n", fcb1->seqreq);
-            printf("fcb->rrec   = %04x\r\n", fcb1->rrec);
-            printf("fcb->rrecob =   %02x\r\n", fcb1->rrecob);
-
-            /*
-            if (fcb1->seqreq == 0) {
-                printf("fcb1->seqreq == 0! is this special?\r\n");
-                getchar();
-                }
-            */
-
-            printf("\n");
+            printf("\r\n[BDOS CALL, FUNC=F_SNEXT, FCB=0x%04x]\r\n", fcb_addr);         
+            break;
+        case 20:
+            fcb_addr = (D << 8) + E;
+            printf("\r\n[BDOS CALL, FUNC=F_READ, FCB=0x%04x]\r\n", fcb_addr);
+            fcb1 = (FCB*) &memory[0][fcb_addr];
+            printf("     fcb->resv = %04x\r\n", fcb1->resv);
+            printf("fcb1->filename = %.*s\r\n", 8, fcb1->filename);
+            printf("fcb1->filetype = %.*s\r\n", 3, fcb1->filetype);
+            printf("       fcb->ex =   %02x\r\n", fcb1->ex);
+            printf("       fcb->rc =   %02x\r\n", fcb1->rc);
+            printf("   fcb->seqreq =   %02x\r\n", fcb1->seqreq);
+            printf("     fcb->rrec = %04x\r\n", fcb1->rrec);
+            printf("   fcb->rrecob =   %02x\r\n", fcb1->rrecob);
+            printf("\r\n");
             fflush(NULL);
             if (killflag) {
                 printf("+++ killflag set\r\n");
                 exit(1);
                 }
             break;
+        case 26:
+            dma_addr = (D << 8) + E;
+            printf("\r\n[BDOS CALL, FUNC=F_DMAOFF, DMA_ADDR=0x%04x]\r\n", dma_addr);
+            break;
+        case 35:
+            fcb_addr = (D << 8) + E;
+            fcb1 = (FCB*) &memory[0][fcb_addr];
+            printf("\r\n[BDOS CALL, FUNC=F_SIZE, FCB=0x%04x]\r\n", fcb_addr);         
+            printf("fcb1->filename = [%.*s]\r\n", 8, fcb1->filename);
+            printf("fcb1->filetype = [%.*s]\r\n", 3, fcb1->filetype);
+            break;
+        case 36:
+            fcb_addr = (D << 8) + E;
+            printf("\r\n[BDOS CALL, FUNC=F_RANDREC, FCB=0x%04x]\r\n", fcb_addr);
+            break;
         default:
             printf("\r\n[BDOS CALL, FUNC=%u, DE=0x%04x]\r\n", C, (D << 8) + E);
             fflush(stdout);
         }
     }
+#endif /* DEBUG_BDOS */
 
     PC = i;
     return(17);
