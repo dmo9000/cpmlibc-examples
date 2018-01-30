@@ -5,7 +5,7 @@ EXAMPLES_INCLUDE_DIR=-I/usr/share/sdcc/z80cpm/include
 examples-install: build-drive9 build-driveB
 
 examples:   $(LIBC_DIR)/link-static.arf			\
-			 example-cat example-fdump example-getopt \
+			 example-cat example-newcat example-fdump example-getopt \
 	    	 example-cls example-bogomips example-tstansi example-format example-fstat \
    		     example-cvi example-readrip example-getfont example-setfont example-telnet \
 	  	     example-iotest example-malltest example-cpstest example-randtest example-lifegame \

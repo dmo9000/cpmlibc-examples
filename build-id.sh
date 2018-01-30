@@ -8,7 +8,7 @@ if [ -r build-id ]; then
     LAST_BUILD_ID=`cat build-id`
     LAST_DATE=`echo $LAST_BUILD_ID | cut -b1-8`
     THIS_DATE=`echo $THIS_BUILD_ID | cut -b1-8`
-    if [ $LAST_BUILD_ID -lt $THIS_BUILD_ID ]; then
+    if [ "$LAST_BUILD_ID" -lt "$THIS_BUILD_ID" ]; then
         # if the old build number is already lower than our new one, a new day has sprung!
         # we can safely just bump the build id and write a new header file
         echo "$THIS_BUILD_ID" > build-id

@@ -62,6 +62,8 @@ drive9:
 	#@cp ../utils/BASCOM53.ZIP ./drive9/B/1/
 	@cp ../htsrc/iotest.c ./drive9/T/1/
 	@cp ../htsrc/hello.c ./drive9/T/1/
+	@cp ../bin/fdump.com ./drive9/B/0/
+	@cp ../bin/newcat.com ./drive9/B/0/
 	@cp ../bin/tstansi.com ./drive9/B/0/
 	@cp ../bin/lifegame.com ./drive9/B/0/
 	@cp ../bin/cls.com ./drive9/B/0/

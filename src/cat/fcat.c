@@ -40,7 +40,7 @@ fcat (char *filename, off_t start_offset, off_t end_offset)
 
     memset (&buffer, 0x00, CHUNK_SIZE);
 
-    //rc = stat ((const char *) filename, &statbuf);
+    rc = stat ((const char *) filename, &statbuf);
     printf("rc = %d, statbuf.st_size = %lu\n", rc, statbuf.st_size);
     expected_size = statbuf.st_size;
 
@@ -72,14 +72,14 @@ fcat (char *filename, off_t start_offset, off_t end_offset)
             {
                 if (buffer[i] == EOF) break;
 
-                //printf("%u:%u\n", offset +i, end_offset);
+                printf("<<<%u:%u>>>\n", offset +i, end_offset);
 
                 if (offset + i <= end_offset) {
                     cpm_putchar(buffer[i]);
                     finalchar = buffer[i];
                 } else {
                     /* reached end offset */
-                    //printf("reached end offset = %lu, lastbyte=[0x%02x]\n", end_offset, finalchar);
+                    printf("reached end offset = %lu, lastbyte=[0x%02x]\n", end_offset, finalchar);
                     goto close_filehandle; 
                 }
             }
@@ -127,9 +127,9 @@ fcat (char *filename, off_t start_offset, off_t end_offset)
 
 close_filehandle:
 
- //                 printf("reached end offset = %lu, lastbyte=[0x%02x]\n", end_offset, finalchar);
- //       printf ("\n---\n");
- //       printf ("* Closing FILE*= 0x%04x\n", testfile, fd);
+                 printf("!!! reached end offset = %lu, lastbyte=[0x%02x]\n", end_offset, finalchar);
+       printf ("\n---\n");
+       printf ("* Closing FILE*= 0x%04x\n", testfile, fd);
         fd = fclose (testfile);
         if (fd != 0)
         {

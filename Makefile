@@ -41,6 +41,7 @@ include tools.mk # Local tools
 #include libraries.mk # Libraries
 include examples.mk # Examples
 include src/cat/cat.mk
+include src/newcat/newcat.mk
 include src/cls/cls.mk
 include src/getopt/getopt.mk
 include src/fdump/fdump.mk

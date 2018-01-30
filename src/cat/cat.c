@@ -78,7 +78,7 @@ main (int argc, char *argv[])
     }
 
 run_program:
-	  printf("fcat -> %s, %lu -> %lu\n", argv[optind], start_offset, end_offset);
+	printf("fcat -> %s, %lu -> %lu\n", argv[optind], start_offset, end_offset);
     fcat((const char *) argv[optind], start_offset, end_offset);
 
 	return 0;
