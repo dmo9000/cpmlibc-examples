@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
         for (i = 0; i < rd ; i++) {
             putchar(buffer[i]);
             }
+				getchar();
         offset+=(uint32_t) rd;
         printf("\n[rd = %d, offset = %lu]\n", rd, offset);
         rd = read(catfd, (char *) &buffer, 128);

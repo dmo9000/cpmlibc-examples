@@ -14,6 +14,11 @@ int main(int argc, char *argv[])
     uint16_t x2 = 0, y2 = 0;
     uint16_t x3 = 0, y3 = 0;
 
+    if (lldetect() != '!') {
+      printf("No graphics device available.\n");
+      return 0;
+      }
+
     if (argc > 1) {
         seed = strtoul(argv[1], NULL, 10); 
         } else {

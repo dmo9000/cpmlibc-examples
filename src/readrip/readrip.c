@@ -21,15 +21,19 @@ int main(int argc, char *argv[])
     int i = 0;
     int index = 0;
     int x = 0, y = 0;
-	off_t remain = 0;
-	off_t dsize = 0;
-	uint8_t pal = 0;
-	int blocks = 0;
+		off_t remain = 0;
+		off_t dsize = 0;
+		uint8_t pal = 0;
+		int blocks = 0;
     off_t bytes_read = 0;
     int remain_in_block = 128;
     off_t offset = 0;
     uint16_t nremain = 0;
     
+	  if (lldetect() != '!') {
+      printf("No graphics device available.\n");
+      return 0;
+      }
 
     TERM=TERM_VT100;
     clear_screen();
