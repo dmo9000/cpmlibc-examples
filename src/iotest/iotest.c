@@ -45,12 +45,12 @@ int main(int argc, char *argv[])
         fseek(myfile, offset, SEEK_SET);
         set_cursor(0, 0);
         rd = fread(&mybuf, 128, 1, myfile);
+        printf("offset = %lu, rd = %d\n", offset, rd);
         if (rd != 1) {
-            printf("fread() didn't get 128 bytes\n");
+						/* completed */
+            //printf("fread() didn't get 128 bytes\n");
             exit(1);
         }
-        printf("offset = %lu, rd = %d\n", offset, rd);
-
 
         for (i = 0 ; i < 1; i++) {
             for (j = 0; j < 16; j++) {
