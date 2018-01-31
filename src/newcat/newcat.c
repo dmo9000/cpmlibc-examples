@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+//#define DEBUG1
+//#define DEBUG2
+
 int main(int argc, char *argv[])
 {
     char buffer[128];
@@ -37,9 +40,13 @@ int main(int argc, char *argv[])
         for (i = 0; i < rd ; i++) {
             putchar(buffer[i]);
             }
+#ifdef DEBUG1
 				getchar();
+#endif /* DEBUG1 */
         offset+=(uint32_t) rd;
+#ifdef DEBUG2
         printf("\n[rd = %d, offset = %lu]\n", rd, offset);
+#endif /* DEBUG2 */
         rd = read(catfd, (char *) &buffer, 128);
         }
 
