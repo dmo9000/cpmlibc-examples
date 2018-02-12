@@ -9,7 +9,7 @@ examples:   $(LIBC_DIR)/link-static.arf			\
 	    	 example-cls example-bogomips example-tstansi example-format example-fstat \
    		     example-cvi example-readrip example-getfont example-setfont example-telnet \
 	  	     example-iotest example-malltest example-cpstest example-randtest example-lifegame \
-    	     example-testlibc util-writerip fonts-8x8 iotestdata package-oem
+    	     example-testlibc example-iotest2 util-writerip fonts-8x8 iotestdata package-oem
 
 diskimages:	 package-oem build-driveB build-drive9	
 	
