@@ -59,6 +59,7 @@ drive9:
 
 	@cp ../testdata/testfile.bin ./drive9/B/0/
 	@cp ../utils/MBASIC.COM ./drive9/B/1/
+	@cp ../bin/cvi.com ./drive9/B/0/
 	@cp ../utils/s.com ./drive9/B/1/
 	#@cp ../utils/BASCOM53.ZIP ./drive9/B/1/
 	@cp ../htsrc/iotest.c ./drive9/T/1/
