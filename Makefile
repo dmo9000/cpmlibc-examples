@@ -60,5 +60,6 @@ include src/cpstest/cpstest.mk
 include src/randtest/randtest.mk
 include src/lifegame/lifegame.mk
 include src/testlibc/testlibc.mk
+include src/iotest2/iotest2.mk
 include esrc/bios/bios.mk
 include esrc/osz/osz.mk
