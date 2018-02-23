@@ -896,7 +896,7 @@ queue_for_output:
 
         fseek(outFile, (long ) ((long) blocks_written * (long) 128), SEEK_SET);
         if (fwrite((const char *) &outputbuffer, 128, 1, outFile) != 1) {
-            printf("* BUFFER FLUSH FAILED!\n");
+            printf("* zmodem_output_byte: BUFFER FLUSH FAILED! blocks_written = %ld\n", blocks_written);
             zmodem_safe_exit();
         }
         /* reset output buffer pointer for next block */
@@ -930,7 +930,7 @@ int output_block(uint8_t len)
 
     fseek(outFile, (long ) ((long) blocks_written * (long) 128), SEEK_SET);
     if (fwrite((const char *) &outputbuffer, len, 1, outFile) != 1) {
-        printf("* BUFFER FLUSH FAILED!\n");
+        printf("* output_block: BUFFER FLUSH FAILED! blocks_written=%ld\n", blocks_written);
         zmodem_safe_exit();
     } else {
         idx = 0;
