@@ -87,13 +87,14 @@ int main(int argc, char *argv[])
     off_t addr1 = 0;
     off_t addr2 = 0;
 
-    __sdcc_heap_init();
-    //bytes_free = heap_init();
+    //__sdcc_heap_init();
+    bytes_free = heap_init();
     initial_segment_size = bytes_free;
     program_break = (uint16_t*) sbrk(0);
     memset(program_break, 0, bytes_free);
-    //printf("program_break = 0x%04x\n", program_break);
-    //printf("bytes_free = 0x%04x\n", bytes_free);
+    printf("program_break = 0x%04x\n", program_break);
+    printf("bytes_free = 0x%04x\n", bytes_free);
+    //exit(1);
 
     if (argc > 1) {
         filename = argv[1];
@@ -107,7 +108,7 @@ int main(int argc, char *argv[])
     }
 
     if (filesize > bytes_free) {
-        printf("File is too large to fit in memory.\n");
+        printf("File is too large to fit in memory. (size=%lu/free=%lu)\n\n", filesize, bytes_free);
         exit(1);
     }
 
