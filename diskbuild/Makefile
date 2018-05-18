@@ -57,6 +57,7 @@ drive9:
 	mkdir -p ./drive9/T/{0,1,2,3,4}/
 	mkdir -p ./drive9/B/{0,1,2,3,4}/
 
+	@cp ../ansi/fruit.ans ./drive9/B/0/
 	@cp ../testdata/testfile.bin ./drive9/B/0/
 	@cp ../utils/MBASIC.COM ./drive9/B/1/
 	@cp ../bin/cvi.com ./drive9/B/0/
