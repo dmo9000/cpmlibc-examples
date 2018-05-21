@@ -79,6 +79,7 @@ drive9:
 	@cp ../bin/format.com ./drive9/B/0/
 	@cp ../bin/randtest.com ./drive9/B/0/
 	@cp ../bin/getopt.com ./drive9/B/0/
+	@cp ../bin/bogomips.com ./drive9/B/0/
 #	@cp ../fonts/8x8/complete.txt ./drive9/T/4/
 #	@cp ../fonts/8x8/*.pf ./drive9/B/4/
 	@cp ../utils/unzip.com ./drive9/B/0
@@ -94,7 +95,7 @@ drive9:
 	#@cp ../oempkg.arc ./drive9/B/0/oempkg.arc
 	#@cp ../oemfonts.arc ./drive9/B/0/oemfonts.arc
 	#@cp ../oemimage.arc ./drive9/B/0/oemimage.arc
-	#@cp ../utils/WS4.ARK ./drive9/B/0/WS4.ARC
+	@cp ../utils/WS4.ARK ./drive9/B/0/WS4.ARC
 	@cp ../utils/unarc.com ./drive9/B/0/unarc.com
 	@cp ../utils/unarc.com ./drive9/B/4/unarc.com
 	@cp ../utils/MORE.COM ./drive9/B/0/MORE.COM
