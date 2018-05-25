@@ -355,6 +355,11 @@ int main(int argc, char *argv[])
     char *connect_name = NULL;
     char *p = NULL;
 
+    if (lldetect() != '!') {
+        printf("No network controller available.\n");
+        return 0;
+    }
+
     if (argc < 2) {
         printf("usage: telnet <x.x.x.x> [port]\n");
         exit(1);

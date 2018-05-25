@@ -31,6 +31,11 @@ int main(int argc, char *argv[])
     uint8_t *ptr = (uint8_t *) &fontbuffer;
     uint8_t *ptr_cur = (uint8_t *) &fontbuffer_cur;
 
+    if (lldetect() != '!') {
+        printf("No graphics controller available.\n");
+        return 0;
+    }
+
     if (argc < 2) {
         printf("usage: setfont <filename>\n");
         exit(1);

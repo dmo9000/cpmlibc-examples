@@ -15,6 +15,12 @@ int main(int argc, char *argv[])
     off_t offset = 0;
     uint8_t *ptr = (uint8_t *) &fontbuffer;
 
+    if (lldetect() != '!') {
+        printf("No graphics controller available.\n");
+        return 0;
+    }
+
+
 
     if (argc < 2) {
         printf("usage: getfont <filename>\n");
