@@ -205,7 +205,8 @@ const char *dns_lookup(char *lookupname)
     static uint8_t dnsreq[128];
     int fd = 0;
     uint16_t rl = 0;
-    int rc = 0;
+    //int rc = 0;
+    int8_t rc = 0; 
     int i = 0;
 
     memset(&dnsreq, 0, 128);
@@ -890,7 +891,10 @@ expand_cr_done:
         if (do_io_out) {
             //printf("tcp_send(%d, [%s], %d\n", s, netbuf, i);
             rc =tcp_send(s, (const char*) &netbuf, i);
-            //printf("send() rc = %d\n", rc);
+            if (rc == -1 || rc == 255) {
+                printf("I/O error! (rc = %d, errno=%u)\n", rc, errno);
+                exit(1);
+            }
         }
 
         rc = tcp_recv(s, (const char *) &netbuf, 128);

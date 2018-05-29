@@ -81,16 +81,12 @@ int tcp_recv(int s, const char *b, uint8_t l)
     return n;
 }
 
-int tcp_send(int s, const char *b, uint8_t l)
+int8_t tcp_send(int s, const char *b, uint8_t l)
 {
     int n = 0;
+    printf("inbuilt tcp_send\n");
     fcntl(s, F_SETFL, O_NONBLOCK); 
     n = write(s, b, l);
-    printf("n = %d\n", n);
-    if (n == -1) {
-        perror("write");
-        exit(1);
-        }
     return n;
 }
 
