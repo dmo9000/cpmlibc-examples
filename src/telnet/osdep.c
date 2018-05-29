@@ -86,6 +86,7 @@ int tcp_send(int s, const char *b, uint8_t l)
     int n = 0;
     fcntl(s, F_SETFL, O_NONBLOCK); 
     n = write(s, b, l);
+    printf("n = %d\n", n);
     if (n == -1) {
         perror("write");
         exit(1);
