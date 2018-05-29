@@ -351,10 +351,10 @@ int main(int argc, char *argv[])
     char optopt = 0;
     uint8_t kb = 0;
     bool do_io_out = false;
-    int rc = 0;
     uint16_t port = DEFAULT_PORT;
     char *connect_name = NULL;
     char *p = NULL;
+    int8_t rc = 0;
 
     if (lldetect() != '!') {
         printf("No network controller available.\n");
@@ -481,9 +481,9 @@ run_program:
 
                         /* be careful about the number of bytes you send here, or you might send some rubbish! this was happening
                          at the login prompt and it took me ages to figure out. we need better code for exchanging terminal type */
-
-                        if (tcp_send(s, (const char*) "\xFF\xF0\xFF\xFA\x18\x00\x41\x4E\x53\x49\xFF\xF0", 12) != 12) {
-                            printf("error sending IAC WILL TERMINAL-TYPE\n");
+                        rc = tcp_send(s, (const char*) "\xFF\xF0\xFF\xFA\x18\x00\x41\x4E\x53\x49\xFF\xF0", 12);
+                        if (rc != 12) {
+                            printf("error sending IAC WILL TERMINAL-TYPE: rc = %d\n", rc);
                             exit(1);
                         }
                         iac_code = 0;
@@ -662,8 +662,9 @@ run_program:
                     case IAC_DO:
                         /* we will "IAC DO TERMINAL-TYPE" */
                         // printf("[RCVD DO TERMINAL-TYPE]\n");
-                        if (tcp_send(s, (const char*) "\xFF\xFB\x18", 3) != 3) {
-                            printf("error sending IAC WILL TERMINAL-TYPE\n");
+                        rc = tcp_send(s, (const char*) "\xFF\xFB\x18", 3); 
+                        if (rc != 3) {
+                            printf("error sending IAC WILL TERMINAL-TYPE; rc = %d\n", rc);
                             exit(1);
                         }
                         //printf("[SENT WILL TERMINAL-TYPE]\n");

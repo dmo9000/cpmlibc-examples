@@ -81,6 +81,7 @@ int tcp_recv(int s, const char *b, uint8_t l)
     return n;
 }
 
+/*
 int8_t tcp_send(int s, const char *b, uint8_t l)
 {
     int n = 0;
@@ -89,6 +90,7 @@ int8_t tcp_send(int s, const char *b, uint8_t l)
     n = write(s, b, l);
     return n;
 }
+*/
 
 int tcp_close(int s)
 {
