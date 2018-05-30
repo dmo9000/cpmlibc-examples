@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
     uint16_t port = DEFAULT_PORT;
     char *connect_name = NULL;
     char *p = NULL;
-    int8_t rc = 0;
+    int rc = 0;
 
     if (lldetect() != '!') {
         printf("No network controller available.\n");
@@ -458,7 +458,8 @@ run_program:
 
     rc = tcp_recv(s, (const char *) &netbuf, 128);
 
-    while (rc != 255 && rc != -1) {
+//    while (rc != 255 && rc != -1 || (rc == -1 && errno != EAGAIN)) {
+    while (rc != -1 || (rc == -1 && errno == EAGAIN)) {
         if (rc) {
 #ifdef DEBUG_NETWORK
             printf("READ->%d\n", rc);
@@ -892,8 +893,8 @@ expand_cr_done:
         if (do_io_out) {
             //printf("tcp_send(%d, [%s], %d\n", s, netbuf, i);
             rc =tcp_send(s, (const char*) &netbuf, i);
-            if (rc == -1 || rc == 255) {
-                printf("I/O error! (rc = %d, errno=%u)\n", rc, errno);
+            if (rc == -1) {
+                printf("write: %s (rc = %d, errno=%u)", strerror(errno), rc, errno);
                 exit(1);
             }
         }
@@ -904,6 +905,8 @@ expand_cr_done:
     while (_getchar() == 0) {
         /* busy wait */
     }
+
+    printf("Connection closed (errno = %d)\n", errno);
     s = tcp_close(s);
     printf("\n");
 
